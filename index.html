@@ -1,10 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TestDrip</title>
+    <title>Login System</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>🚀 TestDrip is Live! V4 GIT</h1>
-    <p>Created by Srimanchal Sahoo</p>
+
+<div class="container">
+
+    <h2>Login</h2>
+
+    <input type="email" id="loginEmail" placeholder="Email">
+    <input type="password" id="loginPassword" placeholder="Password">
+
+    <button onclick="login()">Login</button>
+
+    <p id="loginMessage"></p>
+
+    <hr>
+
+    <h2>Create Account</h2>
+
+    <input type="email" id="registerEmail" placeholder="Email">
+    <input type="password" id="registerPassword" placeholder="Password">
+
+    <button onclick="register()">Create Account</button>
+
+    <p id="registerMessage"></p>
+
+</div>
+
+<script src="script.js"></script>
+
 </body>
 </html>
