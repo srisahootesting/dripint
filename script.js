@@ -1,68 +1,203 @@
-function register() {
+const API_BASE =
+"https://dripint-backend.onrender.com";
 
-    let email = document.getElementById("registerEmail").value;
-    let password = document.getElementById("registerPassword").value;
+window.onload = async () => {
 
-    if(email === "" || password === ""){
-        document.getElementById("registerMessage").innerText =
-        "Please enter email and password";
+    const token =
+    localStorage.getItem("jwt_token");
+
+    if(!token){
         return;
     }
 
-    let users =
-    JSON.parse(localStorage.getItem("users")) || [];
+    try{
 
-    let existingUser =
-    users.find(user => user.email === email);
+        const response =
+        await fetch(
+            API_BASE + "/profile",
+            {
+                headers:{
+                    Authorization:
+                    "Bearer " + token
+                }
+            }
+        );
 
-    if(existingUser){
-        document.getElementById("registerMessage").innerText =
-        "User already exists";
+        if(!response.ok){
+
+            localStorage.removeItem(
+                "jwt_token"
+            );
+
+            return;
+        }
+
+        const data =
+        await response.json();
+
+        showDashboard(
+            data.email
+        );
+
+    }catch(error){
+
+        console.log(error);
+
+    }
+
+};
+
+
+async function sendOTP(){
+
+    const email =
+    document.getElementById("email").value;
+
+    if(!email){
+
+        document.getElementById(
+            "message"
+        ).innerText =
+        "Please enter email";
+
         return;
     }
 
-    users.push({
-        email: email,
-        password: password
-    });
+    try{
 
-    localStorage.setItem(
-        "users",
-        JSON.stringify(users)
-    );
+        const response =
+        await fetch(
+            API_BASE + "/send-otp",
+            {
+                method:"POST",
 
-    document.getElementById("registerMessage").innerText =
-    "Account Created Successfully";
+                headers:{
+                    "Content-Type":
+                    "application/json"
+                },
+
+                body:JSON.stringify({
+                    email:email
+                })
+            }
+        );
+
+        const data =
+        await response.json();
+
+        document.getElementById(
+            "message"
+        ).innerText =
+        data.message || data.error;
+
+    }catch(error){
+
+        document.getElementById(
+            "message"
+        ).innerText =
+        error.message;
+
+    }
 }
 
-function login() {
 
-    let email =
-    document.getElementById("loginEmail").value;
+async function verifyOTP(){
 
-    let password =
-    document.getElementById("loginPassword").value;
+    const email =
+    document.getElementById("email").value;
 
-    let users =
-    JSON.parse(localStorage.getItem("users")) || [];
+    const otp =
+    document.getElementById("otp").value;
 
-    let user = users.find(
-        u => u.email === email &&
-        u.password === password
-    );
+    if(!otp){
 
-    if(user){
+        document.getElementById(
+            "message"
+        ).innerText =
+        "Please enter OTP";
 
-        document.getElementById("loginMessage").innerText =
-        "Login Successful";
+        return;
+    }
 
-        window.location.href =
-        "welcome.html";
+    try{
 
-    } else {
+        const response =
+        await fetch(
+            API_BASE + "/verify-otp",
+            {
+                method:"POST",
 
-        document.getElementById("loginMessage").innerText =
-        "Invalid Email or Password";
+                headers:{
+                    "Content-Type":
+                    "application/json"
+                },
+
+                body:JSON.stringify({
+                    email:email,
+                    otp:otp
+                })
+            }
+        );
+
+        const data =
+        await response.json();
+
+        if(data.token){
+
+            localStorage.setItem(
+                "jwt_token",
+                data.token
+            );
+
+            showDashboard(
+                data.email
+            );
+
+        }else{
+
+            document.getElementById(
+                "message"
+            ).innerText =
+            data.error || "Verification Failed";
+
+        }
+
+    }catch(error){
+
+        document.getElementById(
+            "message"
+        ).innerText =
+        error.message;
 
     }
+}
+
+
+function showDashboard(email){
+
+    document.getElementById(
+        "loginSection"
+    ).style.display =
+    "none";
+
+    document.getElementById(
+        "dashboard"
+    ).style.display =
+    "block";
+
+    document.getElementById(
+        "userEmail"
+    ).innerText =
+    email;
+}
+
+
+function logout(){
+
+    localStorage.removeItem(
+        "jwt_token"
+    );
+
+    location.reload();
+
 }
