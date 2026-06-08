@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import os
 import random
 import pymysql
@@ -11,6 +12,15 @@ from datetime import datetime, timedelta
 load_dotenv()
 
 app = Flask(__name__)
+
+# Allow only frontend domains
+CORS(
+    app,
+    origins=[
+        "https://7sandbox.icu",
+        "https://www.7sandbox.icu"
+    ]
+)
 
 resend.api_key = os.getenv("RESEND_API_KEY")
 
@@ -105,10 +115,9 @@ def validate_token(token):
 
         return payload
 
-    except jwt.ExpiredSignatureError:
-        return None
+    except Exception as e:
 
-    except jwt.InvalidTokenError:
+        print("JWT ERROR:", str(e))
         return None
 
 
@@ -150,6 +159,11 @@ def send_otp():
     try:
 
         data = request.get_json()
+
+        if not data:
+            return jsonify({
+                "error": "No JSON received"
+            }), 400
 
         email = data.get("email")
 
@@ -220,7 +234,7 @@ def send_otp():
 
 
 # ====================================
-# VERIFY OTP + LOGIN
+# VERIFY OTP
 # ====================================
 
 @app.route("/verify-otp", methods=["POST"])
@@ -281,7 +295,9 @@ def verify_otp():
                     SET is_used=1
                     WHERE id=%s
                     """,
-                    (record["id"],)
+                    (
+                        record["id"],
+                    )
                 )
 
                 conn.commit()
@@ -311,7 +327,7 @@ def verify_otp():
 
 
 # ====================================
-# PROTECTED PROFILE API
+# PROFILE API
 # ====================================
 
 @app.route("/profile", methods=["GET"])
