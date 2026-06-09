@@ -1,6 +1,10 @@
 const API_BASE =
 "https://dripint-backend.onrender.com";
 
+/* ==========================
+   PAGE LOAD
+========================== */
+
 window.onload = async () => {
 
     const token =
@@ -47,23 +51,76 @@ window.onload = async () => {
 
 };
 
+/* ==========================
+   LOGIN MODAL
+========================== */
+
+function openLoginModal(){
+
+    document.getElementById(
+        "loginModal"
+    ).style.display = "block";
+
+}
+
+function closeLoginModal(){
+
+    document.getElementById(
+        "loginModal"
+    ).style.display = "none";
+
+}
+
+window.onclick = function(event){
+
+    const modal =
+    document.getElementById(
+        "loginModal"
+    );
+
+    if(event.target === modal){
+
+        modal.style.display =
+        "none";
+
+    }
+
+};
+
+/* ==========================
+   SEND OTP
+========================== */
 
 async function sendOTP(){
 
     const email =
-    document.getElementById("email").value;
+    document.getElementById(
+        "email"
+    ).value.trim();
+
+    const message =
+    document.getElementById(
+        "message"
+    );
+
+    const button =
+    document.getElementById(
+        "sendOtpBtn"
+    );
 
     if(!email){
 
-        document.getElementById(
-            "message"
-        ).innerText =
-        "Please enter email";
+        message.innerText =
+        "Please enter your email.";
 
         return;
     }
 
     try{
+
+        button.disabled = true;
+        button.innerText =
+        "Sending OTP...";
 
         const response =
         await fetch(
@@ -85,41 +142,66 @@ async function sendOTP(){
         const data =
         await response.json();
 
-        document.getElementById(
-            "message"
-        ).innerText =
-        data.message || data.error;
+        message.innerText =
+        data.message ||
+        data.error;
 
     }catch(error){
 
-        document.getElementById(
-            "message"
-        ).innerText =
+        message.innerText =
         error.message;
 
+    }finally{
+
+        button.disabled = false;
+
+        button.innerText =
+        "Send OTP";
+
     }
+
 }
 
+/* ==========================
+   VERIFY OTP
+========================== */
 
 async function verifyOTP(){
 
     const email =
-    document.getElementById("email").value;
+    document.getElementById(
+        "email"
+    ).value.trim();
 
     const otp =
-    document.getElementById("otp").value;
+    document.getElementById(
+        "otp"
+    ).value.trim();
+
+    const message =
+    document.getElementById(
+        "message"
+    );
+
+    const button =
+    document.getElementById(
+        "verifyOtpBtn"
+    );
 
     if(!otp){
 
-        document.getElementById(
-            "message"
-        ).innerText =
-        "Please enter OTP";
+        message.innerText =
+        "Please enter OTP.";
 
         return;
     }
 
     try{
+
+        button.disabled = true;
+
+        button.innerText =
+        "Verifying...";
 
         const response =
         await fetch(
@@ -155,23 +237,31 @@ async function verifyOTP(){
 
         }else{
 
-            document.getElementById(
-                "message"
-            ).innerText =
-            data.error || "Verification Failed";
+            message.innerText =
+            data.error ||
+            "Verification Failed";
 
         }
 
     }catch(error){
 
-        document.getElementById(
-            "message"
-        ).innerText =
+        message.innerText =
         error.message;
 
+    }finally{
+
+        button.disabled = false;
+
+        button.innerText =
+        "Verify & Login";
+
     }
+
 }
 
+/* ==========================
+   DASHBOARD
+========================== */
 
 function showDashboard(email){
 
@@ -189,8 +279,12 @@ function showDashboard(email){
         "userEmail"
     ).innerText =
     email;
+
 }
 
+/* ==========================
+   LOGOUT
+========================== */
 
 function logout(){
 
