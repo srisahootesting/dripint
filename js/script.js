@@ -7,27 +7,29 @@ const API_BASE =
 
 window.onload = async () => {
 
+    await loadProducts();
+
     const token =
     localStorage.getItem("jwt_token");
 
-    if(!token){
+    if (!token) {
         return;
     }
 
-    try{
+    try {
 
         const response =
         await fetch(
             API_BASE + "/profile",
             {
-                headers:{
+                headers: {
                     Authorization:
-                    "Bearer " + token
+                        "Bearer " + token
                 }
             }
         );
 
-        if(!response.ok){
+        if (!response.ok) {
 
             localStorage.removeItem(
                 "jwt_token"
@@ -43,7 +45,7 @@ window.onload = async () => {
             data.email
         );
 
-    }catch(error){
+    } catch (error) {
 
         console.log(error);
 
@@ -52,10 +54,106 @@ window.onload = async () => {
 };
 
 /* ==========================
+   LOAD PRODUCTS
+========================== */
+
+async function loadProducts() {
+
+    const productGrid =
+        document.getElementById(
+            "productGrid"
+        );
+
+    if (!productGrid) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                API_BASE + "/products"
+            );
+
+        const products =
+            await response.json();
+
+        productGrid.innerHTML = "";
+
+        if (!products || products.length === 0) {
+
+            productGrid.innerHTML =
+                "<p>No products available.</p>";
+
+            return;
+
+        }
+
+        products.forEach(product => {
+
+            productGrid.innerHTML += `
+                <div class="product-card">
+
+                    <div class="product-image">
+                        <img
+                            src="${product.image_url}"
+                            alt="${product.product_name}"
+                            style="
+                                width:100%;
+                                height:250px;
+                                object-fit:cover;
+                            "
+                        >
+                    </div>
+
+                    <h3>${product.product_name}</h3>
+
+                    <p class="price">
+                        ₹${product.price}
+                    </p>
+
+                    <button
+                        class="buy-btn"
+                        onclick="viewProduct(${product.id})"
+                    >
+                        View Product
+                    </button>
+
+                </div>
+            `;
+
+        });
+
+    } catch (error) {
+
+        console.log(
+            "Product Load Error:",
+            error
+        );
+
+    }
+
+}
+
+/* ==========================
+   PRODUCT DETAILS
+========================== */
+
+function viewProduct(productId) {
+
+    alert(
+        "Product ID: " +
+        productId +
+        "\n\nProduct page coming next."
+    );
+
+}
+
+/* ==========================
    LOGIN MODAL
 ========================== */
 
-function openLoginModal(){
+function openLoginModal() {
 
     document.getElementById(
         "loginModal"
@@ -63,7 +161,7 @@ function openLoginModal(){
 
 }
 
-function closeLoginModal(){
+function closeLoginModal() {
 
     document.getElementById(
         "loginModal"
@@ -71,17 +169,17 @@ function closeLoginModal(){
 
 }
 
-window.onclick = function(event){
+window.onclick = function (event) {
 
     const modal =
-    document.getElementById(
-        "loginModal"
-    );
+        document.getElementById(
+            "loginModal"
+        );
 
-    if(event.target === modal){
+    if (event.target === modal) {
 
         modal.style.display =
-        "none";
+            "none";
 
     }
 
@@ -91,72 +189,73 @@ window.onclick = function(event){
    SEND OTP
 ========================== */
 
-async function sendOTP(){
+async function sendOTP() {
 
     const email =
-    document.getElementById(
-        "email"
-    ).value.trim();
+        document.getElementById(
+            "email"
+        ).value.trim();
 
     const message =
-    document.getElementById(
-        "message"
-    );
+        document.getElementById(
+            "message"
+        );
 
     const button =
-    document.getElementById(
-        "sendOtpBtn"
-    );
+        document.getElementById(
+            "sendOtpBtn"
+        );
 
-    if(!email){
+    if (!email) {
 
         message.innerText =
-        "Please enter your email.";
+            "Please enter your email.";
 
         return;
     }
 
-    try{
+    try {
 
         button.disabled = true;
+
         button.innerText =
-        "Sending OTP...";
+            "Sending OTP...";
 
         const response =
-        await fetch(
-            API_BASE + "/send-otp",
-            {
-                method:"POST",
+            await fetch(
+                API_BASE + "/send-otp",
+                {
+                    method: "POST",
 
-                headers:{
-                    "Content-Type":
-                    "application/json"
-                },
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                body:JSON.stringify({
-                    email:email
-                })
-            }
-        );
+                    body: JSON.stringify({
+                        email: email
+                    })
+                }
+            );
 
         const data =
-        await response.json();
+            await response.json();
 
         message.innerText =
-        data.message ||
-        data.error;
+            data.message ||
+            data.error;
 
-    }catch(error){
+    } catch (error) {
 
         message.innerText =
-        error.message;
+            error.message;
 
-    }finally{
+    } finally {
 
         button.disabled = false;
 
         button.innerText =
-        "Send OTP";
+            "Send OTP";
 
     }
 
@@ -166,65 +265,65 @@ async function sendOTP(){
    VERIFY OTP
 ========================== */
 
-async function verifyOTP(){
+async function verifyOTP() {
 
     const email =
-    document.getElementById(
-        "email"
-    ).value.trim();
+        document.getElementById(
+            "email"
+        ).value.trim();
 
     const otp =
-    document.getElementById(
-        "otp"
-    ).value.trim();
+        document.getElementById(
+            "otp"
+        ).value.trim();
 
     const message =
-    document.getElementById(
-        "message"
-    );
+        document.getElementById(
+            "message"
+        );
 
     const button =
-    document.getElementById(
-        "verifyOtpBtn"
-    );
+        document.getElementById(
+            "verifyOtpBtn"
+        );
 
-    if(!otp){
+    if (!otp) {
 
         message.innerText =
-        "Please enter OTP.";
+            "Please enter OTP.";
 
         return;
     }
 
-    try{
+    try {
 
         button.disabled = true;
 
         button.innerText =
-        "Verifying...";
+            "Verifying...";
 
         const response =
-        await fetch(
-            API_BASE + "/verify-otp",
-            {
-                method:"POST",
+            await fetch(
+                API_BASE + "/verify-otp",
+                {
+                    method: "POST",
 
-                headers:{
-                    "Content-Type":
-                    "application/json"
-                },
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-                body:JSON.stringify({
-                    email:email,
-                    otp:otp
-                })
-            }
-        );
+                    body: JSON.stringify({
+                        email: email,
+                        otp: otp
+                    })
+                }
+            );
 
         const data =
-        await response.json();
+            await response.json();
 
-        if(data.token){
+        if (data.token) {
 
             localStorage.setItem(
                 "jwt_token",
@@ -235,25 +334,25 @@ async function verifyOTP(){
                 data.email
             );
 
-        }else{
+        } else {
 
             message.innerText =
-            data.error ||
-            "Verification Failed";
+                data.error ||
+                "Verification Failed";
 
         }
 
-    }catch(error){
+    } catch (error) {
 
         message.innerText =
-        error.message;
+            error.message;
 
-    }finally{
+    } finally {
 
         button.disabled = false;
 
         button.innerText =
-        "Verify & Login";
+            "Verify & Login";
 
     }
 
@@ -263,22 +362,22 @@ async function verifyOTP(){
    DASHBOARD
 ========================== */
 
-function showDashboard(email){
+function showDashboard(email) {
 
     document.getElementById(
         "loginSection"
     ).style.display =
-    "none";
+        "none";
 
     document.getElementById(
         "dashboard"
     ).style.display =
-    "block";
+        "block";
 
     document.getElementById(
         "userEmail"
     ).innerText =
-    email;
+        email;
 
 }
 
@@ -286,7 +385,7 @@ function showDashboard(email){
    LOGOUT
 ========================== */
 
-function logout(){
+function logout() {
 
     localStorage.removeItem(
         "jwt_token"

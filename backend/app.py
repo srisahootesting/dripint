@@ -5,6 +5,10 @@ import random
 import pymysql
 import resend
 import jwt
+import requests
+
+from qikink_service import test_qikink_credentials
+
 
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -14,18 +18,29 @@ load_dotenv()
 app = Flask(__name__)
 
 # Allow only frontend domains
+# CORS Configuration
+
 CORS(
     app,
-    origins=[
-        "https://7sandbox.icu",
-        "https://www.7sandbox.icu"
-    ]
+    resources={
+        r"/*": {
+            "origins": [
+                "http://127.0.0.1:5500",
+                "http://localhost:5500",
+                "https://7sandbox.icu",
+                "https://www.7sandbox.icu"
+            ]
+        }
+    }
 )
 
 resend.api_key = os.getenv("RESEND_API_KEY")
 
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
+QIKINK_CLIENT_ID = os.getenv("QIKINK_CLIENT_ID")
+
+QIKINK_CLIENT_SECRET = os.getenv("QIKINK_CLIENT_SECRET")
 
 # ====================================
 # DATABASE CONNECTION
@@ -360,6 +375,96 @@ def profile():
         "email": payload["email"]
     })
 
+# ====================================
+# PRODUCTS API
+# ====================================
+
+@app.route("/products", methods=["GET"])
+def get_products():
+
+    conn = get_db_connection()
+
+    try:
+
+        with conn.cursor() as cursor:
+
+            cursor.execute(
+                """
+                SELECT
+                    id,
+                    qikink_product_id,
+                    product_name,
+                    category,
+                    description,
+                    image_url,
+                    price
+                FROM products
+                WHERE status='ACTIVE'
+                ORDER BY id DESC
+                """
+            )
+
+            products = cursor.fetchall()
+
+            return jsonify(products)
+
+    finally:
+
+        conn.close()
+
+# ====================================
+# SINGLE PRODUCT API
+# ====================================
+
+@app.route("/product/<int:product_id>", methods=["GET"])
+def get_product(product_id):
+
+    conn = get_db_connection()
+
+    try:
+
+        with conn.cursor() as cursor:
+
+            cursor.execute(
+                """
+                SELECT
+                    id,
+                    qikink_product_id,
+                    product_name,
+                    category,
+                    description,
+                    image_url,
+                    price
+                FROM products
+                WHERE id=%s
+                """,
+                (product_id,)
+            )
+
+            product = cursor.fetchone()
+
+            if not product:
+
+                return jsonify({
+                    "error": "Product not found"
+                }), 404
+
+            return jsonify(product)
+
+    finally:
+
+        conn.close()
+
+# ====================================
+# QIKINK TEST
+# ====================================
+
+@app.route("/qikink-test", methods=["GET"])
+def qikink_test():
+
+    return jsonify(
+        test_qikink_credentials()
+    )
 
 if __name__ == "__main__":
 
