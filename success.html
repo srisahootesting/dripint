@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Order Success | Drip Designs</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+<style>
+
+.success-card {
+
+    max-width: 700px;
+    margin: 80px auto;
+    background: white;
+    border-radius: 24px;
+    padding: 50px;
+    text-align: center;
+    box-shadow:
+        0 10px 40px rgba(0,0,0,0.08);
+
+}
+
+.success-icon {
+
+    font-size: 80px;
+    margin-bottom: 20px;
+
+}
+
+.order-number {
+
+    font-size: 24px;
+    font-weight: 700;
+    margin: 20px 0;
+    color: #111;
+
+}
+
+.order-text {
+
+    color: #666;
+    margin-bottom: 30px;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="logo-area">
+
+        <a href="index.html">
+
+            <img
+                src="assets/logo.png"
+                alt="Drip Designs"
+                class="logo">
+
+        </a>
+
+    </div>
+
+    <nav>
+
+        <a href="index.html">
+            Home
+        </a>
+
+        <a href="cart.html">
+            Cart
+        </a>
+
+    </nav>
+
+</header>
+
+<section class="section">
+
+    <div class="success-card">
+
+        <div class="success-icon">
+            ✅
+        </div>
+
+        <h1>
+            Thank You For Your Order
+        </h1>
+
+        <p class="order-text">
+
+            Your order has been received successfully.
+
+        </p>
+
+        <div class="order-number">
+
+            Order Number:
+            <span id="orderNumber">
+                Loading...
+            </span>
+
+        </div>
+
+        <p>
+
+            We will process your order shortly.
+
+        </p>
+
+        <br>
+
+        <a href="index.html">
+
+            <button class="primary-btn">
+
+                Continue Shopping
+
+            </button>
+
+        </a>
+
+    </div>
+
+</section>
+
+<script>
+
+const orderNumber =
+    localStorage.getItem(
+        "order_number"
+    );
+
+document.getElementById(
+    "orderNumber"
+).innerText =
+    orderNumber || "N/A";
+
+</script>
+
+</body>
+
+</html>

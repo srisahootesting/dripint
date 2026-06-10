@@ -466,6 +466,134 @@ def qikink_test():
         test_qikink_credentials()
     )
 
+
+# ====================================
+# CREATE ORDER
+# ====================================
+
+@app.route("/create-order", methods=["POST"])
+def create_order():
+    conn = get_db_connection()
+
+    try:
+        data = request.get_json()
+
+        customer = data.get("customer", {})
+        items = data.get("items", [])
+
+        if not items:
+            return jsonify({"success": False, "error": "Cart is empty"}), 400
+
+        with conn.cursor() as cursor:
+
+            today_prefix = "DD" + datetime.now().strftime("%Y%m%d")
+
+            cursor.execute(
+                """
+                SELECT order_number
+                FROM customer_orders
+                WHERE order_number LIKE %s
+                ORDER BY order_number DESC
+                LIMIT 1
+                """,
+                (today_prefix + "%",)
+            )
+
+            last_order = cursor.fetchone()
+
+            if last_order:
+                last_seq = int(last_order["order_number"][-4:])
+                next_seq = last_seq + 1
+            else:
+                next_seq = 1
+
+            order_number = f"{today_prefix}{next_seq:04d}"
+
+            subtotal = sum(
+                float(item.get("price", 0)) * int(item.get("quantity", 1))
+                for item in items
+            )
+
+            cursor.execute(
+    """
+    INSERT INTO customer_orders
+    (
+        order_number,
+        customer_name,
+        customer_email,
+        customer_phone,
+        address,
+        city,
+        state,
+        pincode,
+        order_total,
+        order_status,
+        created_at
+    )
+    VALUES
+    (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NOW())
+    """,
+    (
+        order_number,
+        customer.get("name"),
+        customer.get("email"),
+        customer.get("phone"),
+        customer.get("address"),
+        customer.get("city"),
+        customer.get("state"),
+        customer.get("pincode"),
+        subtotal,
+        "PENDING"
+    )
+)
+
+            order_id = cursor.lastrowid
+
+            for item in items:
+                cursor.execute(
+                    """
+                    INSERT INTO customer_order_items
+                    (
+                        order_id,
+                        product_id,
+                        product_name,
+                        color,
+                        quantity,
+                        price,
+                        subtotal
+                    )
+                    VALUES
+                    (%s,%s,%s,%s,%s,%s,%s)
+                    """,
+                    (
+                        order_id,
+                        item.get("id"),
+                        item.get("product_name"),
+                        item.get("color"),
+                        item.get("quantity"),
+                        item.get("price"),
+                        float(item.get("price", 0)) * int(item.get("quantity", 1))
+                    )
+                )
+
+            conn.commit()
+
+            return jsonify({
+                "success": True,
+                "order_id": order_id,
+                "order_number": order_number
+            })
+
+    except Exception as e:
+        conn.rollback()
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+    finally:
+        conn.close()
+
 if __name__ == "__main__":
 
     port = int(

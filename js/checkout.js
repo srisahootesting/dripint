@@ -1,3 +1,6 @@
+const API_BASE =
+    "https://dripint-backend.onrender.com";
+
 window.onload = loadSummary;
 
 function loadSummary() {
@@ -41,6 +44,11 @@ function loadSummary() {
 
                 <br>
 
+                Color:
+                ${item.color}
+
+                <br>
+
                 Qty:
                 ${item.quantity}
 
@@ -59,10 +67,8 @@ function loadSummary() {
         <hr>
 
         <h2>
-
             Total:
             ₹${total}
-
         </h2>
 
     `;
@@ -71,7 +77,7 @@ function loadSummary() {
 
 }
 
-function placeOrder() {
+async function placeOrder() {
 
     const name =
         document.getElementById(
@@ -125,43 +131,85 @@ function placeOrder() {
         return;
     }
 
-    const order = {
+    const cart =
+        JSON.parse(
+            localStorage.getItem("cart")
+        ) || [];
 
-        customer: {
+    if (cart.length === 0) {
 
-            name,
-            email,
-            phone,
-            address,
-            city,
-            state,
-            pincode
+        alert(
+            "Cart is empty."
+        );
 
-        },
+        return;
+    }
 
-        cart:
-            JSON.parse(
-                localStorage.getItem(
-                    "cart"
-                )
-            ) || []
+    try {
 
-    };
+        const response =
+            await fetch(
+                `${API_BASE}/create-order`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body: JSON.stringify({
 
-    localStorage.setItem(
-        "last_order",
-        JSON.stringify(order)
-    );
+                        customer: {
 
-    localStorage.removeItem(
-        "cart"
-    );
+                            name,
+                            email,
+                            phone,
+                            address,
+                            city,
+                            state,
+                            pincode
 
-    alert(
-        "Order Placed Successfully!"
-    );
+                        },
 
-    window.location.href =
-        "index.html";
+                        items: cart
+
+                    })
+                }
+            );
+
+        const result =
+            await response.json();
+
+        if (!result.success) {
+
+            alert(
+                result.error ||
+                "Order creation failed."
+            );
+
+            return;
+        }
+
+        localStorage.removeItem(
+            "cart"
+        );
+
+        localStorage.setItem(
+            "order_number",
+            result.order_number
+        );
+
+        window.location.href =
+            "success.html";
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to place order."
+        );
+
+    }
 
 }
