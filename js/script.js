@@ -141,11 +141,9 @@ async function loadProducts() {
 
 function viewProduct(productId) {
 
-    alert(
-        "Product ID: " +
-        productId +
-        "\n\nProduct page coming next."
-    );
+    window.location.href =
+        "product.html?id=" +
+        productId;
 
 }
 

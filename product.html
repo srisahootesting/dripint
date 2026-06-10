@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Product Details | Drip Designs</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+<style>
+
+#toast {
+
+    position: fixed;
+    top: 25px;
+    right: -400px;
+
+    background: white;
+
+    min-width: 320px;
+
+    padding: 18px;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.15);
+
+    transition: all 0.4s ease;
+
+    z-index: 9999;
+
+}
+
+#toast.show {
+
+    right: 25px;
+
+}
+
+.qty-box {
+
+    display:flex;
+    align-items:center;
+    gap:15px;
+    margin:20px 0;
+
+}
+
+.thumbnail-container {
+
+    display:flex;
+    gap:15px;
+
+    margin-top:20px;
+    margin-bottom:20px;
+
+}
+
+.thumbnail {
+
+    width:90px;
+    height:90px;
+
+    border:2px solid #ddd;
+
+    border-radius:12px;
+
+    overflow:hidden;
+
+    cursor:pointer;
+
+    transition:0.3s;
+
+}
+
+.thumbnail:hover {
+
+    border-color:#0f4db8;
+
+    transform:translateY(-3px);
+
+}
+
+.thumbnail img {
+
+    width:100%;
+    height:100%;
+    object-fit:cover;
+
+}
+
+.qty-btn {
+
+    width:40px;
+    height:40px;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-size:22px;
+
+    cursor:pointer;
+
+}
+
+#selectedQty {
+
+    font-size:22px;
+    font-weight:700;
+
+    width:40px;
+    text-align:center;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="toast">
+
+    <div
+        style="
+            color:#28a745;
+            font-weight:700;
+            margin-bottom:5px;
+        "
+    >
+        ✓ Added To Cart
+    </div>
+
+    <div id="toastProduct">
+
+    </div>
+
+    <div
+        id="toastCount"
+        style="
+            margin-top:8px;
+            color:#666;
+        "
+    >
+    </div>
+
+</div>
+
+<header class="header">
+
+<div class="logo-area">
+
+<a href="index.html">
+
+<img
+src="assets/logo.png"
+alt="Drip Designs"
+class="logo">
+
+</a>
+
+</div>
+
+<nav>
+
+<a href="index.html">
+
+Home
+
+</a>
+
+<a href="cart.html">
+
+🛒 Cart
+(<span id="cartCount">0</span>)
+
+</a>
+
+</nav>
+
+</header>
+
+<section class="section">
+
+<div id="productContainer">
+
+Loading Product...
+
+</div>
+
+</section>
+
+<script src="js/product.js"></script>
+
+</body>
+
+</html>

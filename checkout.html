@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Checkout | Drip Designs</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="logo-area">
+
+        <a href="index.html">
+
+            <img
+                src="assets/logo.png"
+                alt="Drip Designs"
+                class="logo">
+
+        </a>
+
+    </div>
+
+    <nav>
+
+        <a href="index.html">Home</a>
+
+        <a href="cart.html">Cart</a>
+
+    </nav>
+
+</header>
+
+<section class="section">
+
+    <div class="section-header">
+
+        <h2>Checkout</h2>
+
+        <p>Complete your order</p>
+
+    </div>
+
+    <div
+        style="
+            max-width:1200px;
+            margin:auto;
+            display:grid;
+            grid-template-columns:1fr 400px;
+            gap:40px;
+        "
+    >
+
+        <div>
+
+            <h3>Customer Details</h3>
+
+            <input
+                type="text"
+                id="customerName"
+                placeholder="Full Name"
+                style="width:100%;padding:12px;margin:10px 0;"
+            >
+
+            <input
+                type="email"
+                id="customerEmail"
+                placeholder="Email"
+                style="width:100%;padding:12px;margin:10px 0;"
+            >
+
+            <input
+                type="text"
+                id="customerPhone"
+                placeholder="Phone Number"
+                style="width:100%;padding:12px;margin:10px 0;"
+            >
+
+            <h3>Shipping Address</h3>
+
+            <textarea
+                id="customerAddress"
+                placeholder="Address"
+                style="width:100%;height:120px;padding:12px;margin:10px 0;"
+            ></textarea>
+
+            <input
+                type="text"
+                id="customerCity"
+                placeholder="City"
+                style="width:100%;padding:12px;margin:10px 0;"
+            >
+
+            <input
+                type="text"
+                id="customerState"
+                placeholder="State"
+                style="width:100%;padding:12px;margin:10px 0;"
+            >
+
+            <input
+                type="text"
+                id="customerPincode"
+                placeholder="Pincode"
+                style="width:100%;padding:12px;margin:10px 0;"
+            >
+
+            <button
+                class="primary-btn"
+                onclick="placeOrder()"
+            >
+                Place Order
+            </button>
+
+        </div>
+
+        <div>
+
+            <h3>Order Summary</h3>
+
+            <div id="orderSummary">
+
+                Loading...
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script src="js/checkout.js"></script>
+
+</body>
+
+</html>
