@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Settings | Drip Designs Admin</title>
+
+<link rel="stylesheet" href="css/admin-layout.css">
+<link rel="stylesheet" href="css/settings.css">
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="admin-layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="admin-sidebar">
+
+        <div class="sidebar-header">
+
+            <img
+                src="assets/logo.png"
+                alt="Logo"
+                class="sidebar-logo">
+
+            <div>
+
+                <div class="sidebar-brand">
+                    DRIP DESIGNS
+                </div>
+
+                <div class="sidebar-subtitle">
+                    Admin Panel
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="sidebar-nav">
+
+            <div class="sidebar-section">
+                MANAGEMENT
+            </div>
+
+            <a
+                href="dashboard.html"
+                class="sidebar-link">
+
+                <span class="sidebar-icon">📋</span>
+                Dashboard
+
+            </a>
+
+            <a
+                href="products.html"
+                class="sidebar-link">
+
+                <span class="sidebar-icon">📦</span>
+                Products
+
+            </a>
+
+            <a
+                href="settings.html"
+                class="sidebar-link active">
+
+                <span class="sidebar-icon">⚙️</span>
+                Settings
+
+            </a>
+
+            <a
+                href="index.html"
+                class="sidebar-link">
+
+                <span class="sidebar-icon">🏠</span>
+                Store Front
+
+            </a>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+
+    <main class="admin-main">
+
+        <div class="admin-topbar">
+
+            <div class="admin-topbar-left">
+
+                <div class="admin-topbar-title">
+                    Settings
+                </div>
+
+                <div class="admin-topbar-subtitle">
+                    Store configuration and integrations
+                </div>
+
+            </div>
+
+            <div class="admin-user">
+                Admin
+            </div>
+
+        </div>
+
+        <div class="admin-page">
+
+            <div class="settings-container">
+
+                <div class="settings-grid">
+
+                    <!-- STORE SETTINGS -->
+
+                    <div class="settings-card">
+
+                        <h2>Store Settings</h2>
+
+                        <div class="form-group">
+                            <label>Store Name</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="storeName"
+                                value="Drip Designs">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Store Email</label>
+                            <input
+                                type="email"
+                                class="form-control"
+                                id="storeEmail">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Support Phone</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="supportPhone">
+                        </div>
+
+                        <div class="form-group">
+                            <label>WhatsApp Number</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="whatsappNumber">
+                        </div>
+
+                    </div>
+
+                    <!-- BRANDING -->
+
+                    <div class="settings-card">
+
+                        <h2>Branding</h2>
+
+                        <div class="form-group">
+                            <label>Logo URL</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="logoUrl">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Banner URL</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="bannerUrl">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Instagram URL</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="instagramUrl">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Facebook URL</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="facebookUrl">
+                        </div>
+
+                    </div>
+
+                    <!-- RAZORPAY -->
+
+                    <div class="settings-card">
+
+                        <h2>Payment Settings</h2>
+
+                        <div class="form-group">
+                            <label>Razorpay Key ID</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="razorpayKey">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Status</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                value="Configured Later"
+                                readonly>
+                        </div>
+
+                    </div>
+
+                    <!-- QIKINK -->
+
+                    <div class="settings-card">
+
+                        <h2>Qikink Settings</h2>
+
+                        <div class="form-group">
+                            <label>Qikink Email</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="qikinkEmail">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Qikink API Key</label>
+                            <input
+                                type="password"
+                                class="form-control"
+                                id="qikinkApiKey">
+                        </div>
+
+                    </div>
+
+                    <!-- ADMIN -->
+
+                    <div class="settings-card">
+
+                        <h2>Admin Settings</h2>
+
+                        <div class="form-group">
+                            <label>Admin Name</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                value="Admin">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Admin Email</label>
+                            <input
+                                type="email"
+                                class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Change Password</label>
+                            <input
+                                type="password"
+                                class="form-control">
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div style="margin-top:30px;">
+
+                    <button
+                        class="save-btn"
+                        onclick="saveSettings()">
+
+                        Save Settings
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="js/settings.js"></script>
+
+</body>
+
+</html>

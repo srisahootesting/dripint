@@ -876,6 +876,154 @@ def update_product_status():
         conn.close()
 
 
+@app.route(
+    "/admin/settings",
+    methods=["GET"]
+)
+def get_settings():
+
+    try:
+
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        cursor.execute(
+            """
+            SELECT *
+            FROM store_settings
+            LIMIT 1
+            """
+        )
+
+        settings = cursor.fetchone()
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({
+
+            "success": True,
+            "settings": settings
+
+        })
+
+    except Exception as e:
+
+        return jsonify({
+
+            "success": False,
+            "error": str(e)
+
+        }), 500
+
+
+@app.route(
+    "/admin/settings",
+    methods=["PUT"]
+)
+def update_settings():
+
+    try:
+
+        data = request.json
+
+        conn = get_db_connection()
+
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            UPDATE store_settings
+            SET
+
+            store_name=%s,
+            store_email=%s,
+            support_phone=%s,
+            whatsapp_number=%s,
+
+            logo_url=%s,
+            banner_url=%s,
+
+            instagram_url=%s,
+            facebook_url=%s,
+
+            razorpay_key=%s,
+
+            qikink_email=%s,
+            qikink_api_key=%s
+
+            WHERE id=1
+            """,
+            (
+
+                data.get(
+                    "store_name"
+                ),
+
+                data.get(
+                    "store_email"
+                ),
+
+                data.get(
+                    "support_phone"
+                ),
+
+                data.get(
+                    "whatsapp_number"
+                ),
+
+                data.get(
+                    "logo_url"
+                ),
+
+                data.get(
+                    "banner_url"
+                ),
+
+                data.get(
+                    "instagram_url"
+                ),
+
+                data.get(
+                    "facebook_url"
+                ),
+
+                data.get(
+                    "razorpay_key"
+                ),
+
+                data.get(
+                    "qikink_email"
+                ),
+
+                data.get(
+                    "qikink_api_key"
+                )
+
+            )
+        )
+
+        conn.commit()
+
+        cursor.close()
+        conn.close()
+
+        return jsonify({
+
+            "success": True
+
+        })
+
+    except Exception as e:
+
+        return jsonify({
+
+            "success": False,
+            "error": str(e)
+
+        }), 500
+
+
 # ====================================
 # ADMIN ORDER
 # ====================================

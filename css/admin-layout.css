@@ -1,0 +1,316 @@
+/* =========================================
+   DRIP DESIGNS ADMIN LAYOUT V2
+   Shared Layout Only
+   DOES NOT TOUCH:
+   - KPI Cards
+   - Tables
+   - Dashboard Widgets
+   - Product Widgets
+========================================= */
+
+:root{
+    --admin-sidebar-width:260px;
+
+    --admin-primary:#0d47a1;
+    --admin-primary-light:#e8f0fe;
+
+    --admin-bg:#f5f7fb;
+    --admin-card:#ffffff;
+
+    --admin-text:#111827;
+    --admin-muted:#6b7280;
+
+    --admin-border:#e5e7eb;
+
+    --admin-shadow:
+        0 10px 30px rgba(0,0,0,.06);
+}
+
+/* =========================================
+   BASE
+========================================= */
+
+.admin-layout{
+    min-height:100vh;
+    display:flex;
+    background:var(--admin-bg);
+}
+
+/* =========================================
+   SIDEBAR
+========================================= */
+
+.admin-sidebar{
+
+    width:var(--admin-sidebar-width);
+
+    background:#ffffff;
+
+    border-right:1px solid var(--admin-border);
+
+    position:fixed;
+
+    top:0;
+    left:0;
+    bottom:0;
+
+    overflow-y:auto;
+
+    z-index:1000;
+}
+
+/* =========================================
+   LOGO AREA
+========================================= */
+
+.sidebar-header{
+
+    padding:24px 20px;
+
+    border-bottom:1px solid var(--admin-border);
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+}
+
+.sidebar-logo{
+
+    width:42px;
+    height:42px;
+    object-fit:contain;
+}
+
+.sidebar-brand{
+
+    font-size:18px;
+    font-weight:800;
+    color:var(--admin-text);
+
+    line-height:1.2;
+}
+
+.sidebar-subtitle{
+
+    font-size:12px;
+    color:var(--admin-muted);
+}
+
+/* =========================================
+   NAVIGATION
+========================================= */
+
+.sidebar-nav{
+
+    padding:20px 12px;
+}
+
+.sidebar-section{
+
+    font-size:11px;
+
+    color:var(--admin-muted);
+
+    text-transform:uppercase;
+
+    letter-spacing:1px;
+
+    font-weight:700;
+
+    padding:10px 14px;
+
+    margin-bottom:8px;
+}
+
+.sidebar-link{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    text-decoration:none;
+
+    color:#374151;
+
+    padding:14px 16px;
+
+    border-radius:12px;
+
+    font-weight:600;
+
+    margin-bottom:6px;
+
+    transition:.2s;
+}
+
+.sidebar-link:hover{
+
+    background:#f3f4f6;
+}
+
+.sidebar-link.active{
+
+    background:var(--admin-primary);
+
+    color:white;
+}
+
+.sidebar-icon{
+
+    width:22px;
+
+    text-align:center;
+
+    font-size:17px;
+}
+
+/* =========================================
+   MAIN CONTENT
+========================================= */
+
+.admin-main{
+
+    flex:1;
+
+    margin-left:var(--admin-sidebar-width);
+
+    min-height:100vh;
+}
+
+/* =========================================
+   TOPBAR
+========================================= */
+
+.admin-topbar{
+
+    background:white;
+
+    border-bottom:1px solid var(--admin-border);
+
+    padding:18px 30px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    position:sticky;
+
+    top:0;
+
+    z-index:500;
+}
+
+.admin-topbar-left{
+
+    display:flex;
+
+    flex-direction:column;
+}
+
+.admin-topbar-title{
+
+    font-size:20px;
+
+    font-weight:700;
+
+    color:var(--admin-text);
+}
+
+.admin-topbar-subtitle{
+
+    font-size:13px;
+
+    color:var(--admin-muted);
+
+    margin-top:3px;
+}
+
+.admin-user{
+
+    background:#f8fafc;
+
+    border:1px solid var(--admin-border);
+
+    padding:10px 16px;
+
+    border-radius:999px;
+
+    font-size:14px;
+
+    font-weight:600;
+}
+
+/* =========================================
+   PAGE CONTENT
+========================================= */
+
+.admin-page{
+
+    padding:30px;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media(max-width:1000px){
+
+    .admin-layout{
+
+        flex-direction:column;
+    }
+
+    .admin-sidebar{
+
+        position:relative;
+
+        width:100%;
+
+        height:auto;
+
+        border-right:none;
+
+        border-bottom:1px solid var(--admin-border);
+    }
+
+    .admin-main{
+
+        margin-left:0;
+    }
+
+    .admin-topbar{
+
+        padding:15px 20px;
+    }
+
+    .admin-page{
+
+        padding:20px;
+    }
+
+}
+
+@media(max-width:768px){
+
+    .sidebar-nav{
+
+        padding:12px;
+    }
+
+    .sidebar-link{
+
+        padding:12px;
+    }
+
+    .admin-topbar-title{
+
+        font-size:18px;
+    }
+
+}

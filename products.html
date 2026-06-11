@@ -8,7 +8,7 @@
 
 <title>Product Management | Drip Designs Admin</title>
 
-<link rel="stylesheet" href="css/dashboard.css">
+<link rel="stylesheet" href="css/admin-layout.css">
 <link rel="stylesheet" href="css/products.css">
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -18,139 +18,254 @@ rel="stylesheet">
 
 <body>
 
-<div class="products-container">
+<div class="admin-layout">
 
-    <!-- PAGE HEADER -->
+    <!-- SIDEBAR -->
 
-    <div class="page-header">
+    <aside class="admin-sidebar">
 
-        <div>
+        <div class="sidebar-header">
 
-            <h1 class="page-title">
-                Product Management
-            </h1>
+            <img
+                src="assets/logo.png"
+                alt="Logo"
+                class="sidebar-logo">
 
-            <p class="page-subtitle">
-                Manage products, pricing and visibility
-            </p>
+            <div>
 
-        </div>
+                <div class="sidebar-brand">
+                    DRIP DESIGNS
+                </div>
 
-        <button
-            class="add-product-btn"
-            onclick="openAddProductModal()">
-
-            + Add Product
-
-        </button>
-
-    </div>
-
-    <!-- KPI CARDS -->
-
-    <div class="kpi-grid">
-
-        <div class="kpi-card">
-
-            <div class="kpi-title">
-                Total Products
-            </div>
-
-            <div
-                class="kpi-value"
-                id="totalProducts">
-
-                0
+                <div class="sidebar-subtitle">
+                    Admin Panel
+                </div>
 
             </div>
 
         </div>
 
-        <div class="kpi-card">
+        <div class="sidebar-nav">
 
-            <div class="kpi-title">
-                Active Products
+            <div class="sidebar-section">
+                MANAGEMENT
             </div>
 
-            <div
-                class="kpi-value"
-                id="activeProducts">
+            <a
+                href="dashboard.html"
+                class="sidebar-link">
 
-                0
+                <span class="sidebar-icon">📋</span>
+
+                Dashboard
+
+            </a>
+
+            <a
+                href="products.html"
+                class="sidebar-link active">
+
+                <span class="sidebar-icon">📦</span>
+
+                Products
+
+            </a>
+
+            <a
+                href="#"
+                class="sidebar-link">
+
+                <span class="sidebar-icon">⚙️</span>
+
+                Settings
+
+            </a>
+
+            <a
+                href="index.html"
+                class="sidebar-link">
+
+                <span class="sidebar-icon">🏠</span>
+
+                Store Front
+
+            </a>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+
+    <main class="admin-main">
+
+        <div class="admin-topbar">
+
+            <div class="admin-topbar-left">
+
+                <div class="admin-topbar-title">
+
+                    Product Management
+
+                </div>
+
+                <div class="admin-topbar-subtitle">
+
+                    Manage products, pricing and catalog visibility
+
+                </div>
+
+            </div>
+
+            <div class="admin-user">
+
+                Admin
 
             </div>
 
         </div>
 
-        <div class="kpi-card">
+        <div class="admin-page">
 
-            <div class="kpi-title">
-                Inactive Products
-            </div>
+            <div class="products-container">
 
-            <div
-                class="kpi-value"
-                id="inactiveProducts">
+                <!-- PAGE HEADER -->
 
-                0
+                <div class="page-header">
+
+                    <div>
+
+                        <h1 class="page-title">
+                            Product Management
+                        </h1>
+
+                        <p class="page-subtitle">
+                            Manage products, pricing and visibility
+                        </p>
+
+                    </div>
+
+                    <button
+                        class="add-product-btn"
+                        onclick="openAddProductModal()">
+
+                        + Add Product
+
+                    </button>
+
+                </div>
+
+                <!-- KPI CARDS -->
+
+                <div class="kpi-grid">
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-title">
+                            Total Products
+                        </div>
+
+                        <div
+                            class="kpi-value"
+                            id="totalProducts">
+
+                            0
+
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-title">
+                            Active Products
+                        </div>
+
+                        <div
+                            class="kpi-value"
+                            id="activeProducts">
+
+                            0
+
+                        </div>
+
+                    </div>
+
+                    <div class="kpi-card">
+
+                        <div class="kpi-title">
+                            Inactive Products
+                        </div>
+
+                        <div
+                            class="kpi-value"
+                            id="inactiveProducts">
+
+                            0
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- SEARCH -->
+
+                <div class="search-section">
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        class="search-box"
+                        placeholder="Search by Product Name, Category or Qikink Product ID">
+
+                </div>
+
+                <!-- TABLE -->
+
+                <div class="table-wrapper">
+
+                    <table class="products-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Image</th>
+                                <th>Product Name</th>
+                                <th>Category</th>
+                                <th>Qikink Product ID</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="productsTableBody">
+
+                            <tr>
+
+                                <td colspan="7" class="no-data">
+
+                                    Loading Products...
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
 
             </div>
 
         </div>
 
-    </div>
-
-    <!-- SEARCH -->
-
-    <div class="search-section">
-
-        <input
-            type="text"
-            id="searchInput"
-            class="search-box"
-            placeholder="Search by Product Name, Category or Qikink Product ID">
-
-    </div>
-
-    <!-- TABLE -->
-
-    <div class="table-wrapper">
-
-        <table class="products-table">
-
-            <thead>
-
-                <tr>
-
-                    <th>Image</th>
-                    <th>Product Name</th>
-                    <th>Category</th>
-                    <th>Qikink Product ID</th>
-                    <th>Price</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-
-                </tr>
-
-            </thead>
-
-            <tbody id="productsTableBody">
-
-                <tr>
-
-                    <td colspan="7" class="no-data">
-
-                        Loading Products...
-
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
+    </main>
 
 </div>
 
