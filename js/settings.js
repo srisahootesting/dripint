@@ -2,99 +2,108 @@
    DRIP DESIGNS SETTINGS
 ========================================== */
 
-const SETTINGS_KEY =
-"drip_designs_settings";
+const API_BASE =
+"https://dripint-backend.onrender.com";
 
 /* ==========================================
    PAGE LOAD
 ========================================== */
 
-window.onload = function () {
+window.onload = async function () {
 
-    loadSettings();
+    await loadSettings();
 };
 
 /* ==========================================
    LOAD SETTINGS
 ========================================== */
 
-function loadSettings() {
-
-    const savedSettings =
-        localStorage.getItem(
-            SETTINGS_KEY
-        );
-
-    if (!savedSettings) {
-
-        return;
-    }
+async function loadSettings() {
 
     try {
 
+        const response =
+            await fetch(
+                `${API_BASE}/admin/settings`
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            throw new Error(
+                data.error || "Failed to load settings"
+            );
+        }
+
         const settings =
-            JSON.parse(savedSettings);
+            data.settings || {};
 
         setValue(
             "storeName",
-            settings.storeName
+            settings.store_name
         );
 
         setValue(
             "storeEmail",
-            settings.storeEmail
+            settings.store_email
         );
 
         setValue(
             "supportPhone",
-            settings.supportPhone
+            settings.support_phone
         );
 
         setValue(
             "whatsappNumber",
-            settings.whatsappNumber
+            settings.whatsapp_number
         );
 
         setValue(
             "logoUrl",
-            settings.logoUrl
+            settings.logo_url
         );
 
         setValue(
             "bannerUrl",
-            settings.bannerUrl
+            settings.banner_url
         );
 
         setValue(
             "instagramUrl",
-            settings.instagramUrl
+            settings.instagram_url
         );
 
         setValue(
             "facebookUrl",
-            settings.facebookUrl
+            settings.facebook_url
         );
 
         setValue(
             "razorpayKey",
-            settings.razorpayKey
+            settings.razorpay_key
         );
 
         setValue(
             "qikinkEmail",
-            settings.qikinkEmail
+            settings.qikink_email
         );
 
         setValue(
             "qikinkApiKey",
-            settings.qikinkApiKey
+            settings.qikink_api_key
         );
 
     } catch (error) {
 
         console.error(
-            "Settings load error:",
+            "Load Settings Error:",
             error
+        );
+
+        showErrorToast(
+            "Failed to load settings"
         );
     }
 }
@@ -103,73 +112,96 @@ function loadSettings() {
    SAVE SETTINGS
 ========================================== */
 
-function saveSettings() {
+async function saveSettings() {
 
     try {
 
-        const settings = {
+        const payload = {
 
-            storeName:
+            store_name:
                 getValue(
                     "storeName"
                 ),
 
-            storeEmail:
+            store_email:
                 getValue(
                     "storeEmail"
                 ),
 
-            supportPhone:
+            support_phone:
                 getValue(
                     "supportPhone"
                 ),
 
-            whatsappNumber:
+            whatsapp_number:
                 getValue(
                     "whatsappNumber"
                 ),
 
-            logoUrl:
+            logo_url:
                 getValue(
                     "logoUrl"
                 ),
 
-            bannerUrl:
+            banner_url:
                 getValue(
                     "bannerUrl"
                 ),
 
-            instagramUrl:
+            instagram_url:
                 getValue(
                     "instagramUrl"
                 ),
 
-            facebookUrl:
+            facebook_url:
                 getValue(
                     "facebookUrl"
                 ),
 
-            razorpayKey:
+            razorpay_key:
                 getValue(
                     "razorpayKey"
                 ),
 
-            qikinkEmail:
+            qikink_email:
                 getValue(
                     "qikinkEmail"
                 ),
 
-            qikinkApiKey:
+            qikink_api_key:
                 getValue(
                     "qikinkApiKey"
                 )
 
         };
 
-        localStorage.setItem(
-            SETTINGS_KEY,
-            JSON.stringify(settings)
-        );
+        const response =
+            await fetch(
+                `${API_BASE}/admin/settings`,
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            throw new Error(
+                data.error || "Save failed"
+            );
+        }
 
         showSuccessToast(
             "Settings saved successfully"
@@ -177,9 +209,12 @@ function saveSettings() {
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Save Settings Error:",
+            error
+        );
 
-        alert(
+        showErrorToast(
             "Failed to save settings"
         );
     }
@@ -225,6 +260,33 @@ function setValue(
 
 function showSuccessToast(message) {
 
+    showToast(
+        message,
+        "#16a34a"
+    );
+}
+
+/* ==========================================
+   ERROR TOAST
+========================================== */
+
+function showErrorToast(message) {
+
+    showToast(
+        message,
+        "#dc2626"
+    );
+}
+
+/* ==========================================
+   TOAST
+========================================== */
+
+function showToast(
+    message,
+    color
+) {
+
     let toast =
         document.getElementById(
             "settingsToast"
@@ -248,9 +310,6 @@ function showSuccessToast(message) {
 
         toast.style.right =
             "20px";
-
-        toast.style.background =
-            "#16a34a";
 
         toast.style.color =
             "white";
@@ -280,6 +339,9 @@ function showSuccessToast(message) {
             toast
         );
     }
+
+    toast.style.background =
+        color;
 
     toast.innerText =
         message;

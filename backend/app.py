@@ -876,50 +876,40 @@ def update_product_status():
         conn.close()
 
 
-@app.route(
-    "/admin/settings",
-    methods=["GET"]
-)
+@app.route("/admin/settings", methods=["GET"])
 def get_settings():
 
     try:
 
         conn = get_db_connection()
-        cursor = conn.cursor(dictionary=True)
 
-        cursor.execute(
-            """
-            SELECT *
-            FROM store_settings
-            LIMIT 1
-            """
-        )
+        with conn.cursor() as cursor:
 
-        settings = cursor.fetchone()
+            cursor.execute("""
+                SELECT *
+                FROM store_settings
+                LIMIT 1
+            """)
 
-        cursor.close()
-        conn.close()
+            settings = cursor.fetchone()
 
-        return jsonify({
-
-            "success": True,
-            "settings": settings
-
-        })
+            return jsonify({
+                "success": True,
+                "settings": settings
+            })
 
     except Exception as e:
 
         return jsonify({
-
             "success": False,
             "error": str(e)
-
         }), 500
 
+    finally:
 
-@app.route(
-    "/admin/settings",
-    methods=["PUT"]
+        conn.close()
+
+@app.route("/admin/settings", methods=["PUT"]
 )
 def update_settings():
 
