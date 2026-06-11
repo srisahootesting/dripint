@@ -203,11 +203,9 @@ function renderOrders() {
             <tr>
 
                 <td>
-
                     <strong>
                         ${order.order_number}
                     </strong>
-
                 </td>
 
                 <td>
@@ -220,7 +218,7 @@ function renderOrders() {
 
                 <td>
                     ₹${parseFloat(
-                        order.order_total
+                        order.order_total || 0
                     ).toFixed(2)}
                 </td>
 
@@ -252,13 +250,9 @@ function renderOrders() {
 
                     <button
                         class="action-btn"
-                        onclick="
-                            viewOrder(
-                                ${order.id}
-                            )
-                        "
+                        onclick="viewOrder(${order.id})"
                     >
-                        View
+                        View Order
                     </button>
 
                 </td>
@@ -274,7 +268,7 @@ function renderOrders() {
 }
 
 /* =========================================
-   FILTER BUTTONS
+   FILTERS
 ========================================= */
 
 function initializeFilters() {
@@ -321,19 +315,14 @@ function initializeFilters() {
 
 function initializeSearch() {
 
-    const searchInput =
-        document.getElementById(
+    document
+        .getElementById(
             "searchInput"
+        )
+        .addEventListener(
+            "input",
+            applyFilters
         );
-
-    searchInput.addEventListener(
-        "input",
-        () => {
-
-            applyFilters();
-
-        }
-    );
 
 }
 
@@ -365,25 +354,19 @@ function applyFilters() {
 
                 order.order_number
                     ?.toLowerCase()
-                    .includes(
-                        searchValue
-                    )
+                    .includes(searchValue)
 
                 ||
 
                 order.customer_name
                     ?.toLowerCase()
-                    .includes(
-                        searchValue
-                    )
+                    .includes(searchValue)
 
                 ||
 
                 order.customer_phone
                     ?.toLowerCase()
-                    .includes(
-                        searchValue
-                    );
+                    .includes(searchValue);
 
             return (
                 matchesStatus &&
@@ -397,7 +380,7 @@ function applyFilters() {
 }
 
 /* =========================================
-   VIEW ORDER
+   VIEW ORDER MODAL V2
 ========================================= */
 
 async function viewOrder(orderId) {
@@ -412,52 +395,59 @@ async function viewOrder(orderId) {
         const data =
             await response.json();
 
+        if (!data.success) {
+
+            throw new Error(
+                "Unable to load order"
+            );
+
+        }
+
         const order =
             data.order;
 
-        let productsHtml = "";
+        const items =
+            data.items || [];
 
-        data.items.forEach(item => {
+        let itemsHtml = "";
 
-            productsHtml += `
+        items.forEach(item => {
 
-                <div class="product-card">
+            itemsHtml += `
 
-                    <div
-                        style="
-                            display:flex;
-                            justify-content:space-between;
-                            align-items:center;
-                        "
-                    >
+                <tr>
 
-                        <div>
+                    <td>
 
-                            <strong>
-                                ${item.product_name}
-                            </strong>
+                        <strong>
+                            ${item.product_name}
+                        </strong>
 
-                            <br>
+                        <br>
 
-                            Color:
-                            ${item.color}
+                        <small>
+                            ${item.color || ""}
+                        </small>
 
-                        </div>
+                    </td>
 
-                        <div>
+                    <td>
+                        ${item.quantity}
+                    </td>
 
-                            Qty:
-                            ${item.quantity}
+                    <td>
+                        ₹${parseFloat(
+                            item.price || 0
+                        ).toFixed(2)}
+                    </td>
 
-                            <br>
+                    <td>
+                        ₹${parseFloat(
+                            item.subtotal || 0
+                        ).toFixed(2)}
+                    </td>
 
-                            ₹${item.subtotal}
-
-                        </div>
-
-                    </div>
-
-                </div>
+                </tr>
 
             `;
 
@@ -467,91 +457,26 @@ async function viewOrder(orderId) {
             "orderDetails"
         ).innerHTML = `
 
-            <h2
-                style="
-                    margin-bottom:25px;
-                "
-            >
+            <div class="order-header">
 
-                ${order.order_number}
+                <div class="order-header-left">
 
-            </h2>
+                    <h2>
+                        ${order.order_number}
+                    </h2>
 
-            <div class="info-grid">
+                    <div class="order-meta">
 
-                <div class="section-card">
+                        Created:
+                        ${formatDate(
+                            order.created_at
+                        )}
 
-                    <div class="section-title">
-                        Customer Information
                     </div>
 
-                    <strong>Name</strong>
-                    <br>
-                    ${order.customer_name}
-
-                    <br><br>
-
-                    <strong>Email</strong>
-                    <br>
-                    ${order.customer_email}
-
-                    <br><br>
-
-                    <strong>Phone</strong>
-                    <br>
-                    ${order.customer_phone}
-
                 </div>
 
-                <div class="section-card">
-
-                    <div class="section-title">
-                        Shipping Address
-                    </div>
-
-                    ${order.address}
-                    <br><br>
-
-                    ${order.city}
-                    <br>
-
-                    ${order.state}
-                    -
-                    ${order.pincode}
-
-                </div>
-
-            </div>
-
-            <div class="section-card">
-
-                <div class="section-title">
-                    Products
-                </div>
-
-                ${productsHtml}
-
-            </div>
-
-            <div class="section-card">
-
-                <div class="summary-row">
-
-                    <strong>
-                        Order Total
-                    </strong>
-
-                    <strong>
-                        ₹${order.order_total}
-                    </strong>
-
-                </div>
-
-                <div class="summary-row">
-
-                    <strong>
-                        Status
-                    </strong>
+                <div>
 
                     <span
                         class="${getStatusBadge(
@@ -569,51 +494,269 @@ async function viewOrder(orderId) {
 
             </div>
 
-            <select
-                id="statusSelect"
-                class="status-select"
-            >
+            <div class="summary-grid">
 
-                <option value="PENDING">
-                    PENDING
-                </option>
+                <div class="summary-card">
 
-                <option value="CONFIRMED">
-                    CONFIRMED
-                </option>
+                    <div class="summary-title">
+                        Order Number
+                    </div>
 
-                <option value="IN_PRODUCTION">
-                    IN_PRODUCTION
-                </option>
+                    <div class="summary-value">
+                        ${order.order_number}
+                    </div>
 
-                <option value="SHIPPED">
-                    SHIPPED
-                </option>
+                </div>
 
-                <option value="DELIVERED">
-                    DELIVERED
-                </option>
+                <div class="summary-card">
 
-                <option value="CANCELLED">
-                    CANCELLED
-                </option>
+                    <div class="summary-title">
+                        Order Date
+                    </div>
 
-            </select>
+                    <div class="summary-value">
+                        ${formatDate(
+                            order.created_at
+                        )}
+                    </div>
 
-            <button
-                class="action-btn"
-                style="
-                    width:100%;
-                    padding:14px;
-                "
-                onclick="
-                    updateStatus(
-                        ${order.id}
-                    )
-                "
-            >
-                Update Status
-            </button>
+                </div>
+
+                <div class="summary-card">
+
+                    <div class="summary-title">
+                        Status
+                    </div>
+
+                    <div class="summary-value">
+                        ${formatStatus(
+                            order.order_status
+                        )}
+                    </div>
+
+                </div>
+
+                <div class="summary-card">
+
+                    <div class="summary-title">
+                        Total Amount
+                    </div>
+
+                    <div class="summary-value">
+                        ₹${parseFloat(
+                            order.order_total || 0
+                        ).toFixed(2)}
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="order-grid">
+
+                <div class="section-card">
+
+                    <div class="section-title">
+                        Customer Details
+                    </div>
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Name
+                        </div>
+
+                        <div class="info-value">
+                            ${order.customer_name}
+                        </div>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Email
+                        </div>
+
+                        <div class="info-value">
+                            ${order.customer_email}
+                        </div>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Phone
+                        </div>
+
+                        <div class="info-value">
+                            ${order.customer_phone}
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="section-card">
+
+                    <div class="section-title">
+                        Shipping Address
+                    </div>
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Address
+                        </div>
+
+                        <div class="info-value">
+                            ${order.address}
+                        </div>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            City
+                        </div>
+
+                        <div class="info-value">
+                            ${order.city}
+                        </div>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            State
+                        </div>
+
+                        <div class="info-value">
+                            ${order.state}
+                        </div>
+
+                    </div>
+
+                    <div class="info-item">
+
+                        <div class="info-label">
+                            Pincode
+                        </div>
+
+                        <div class="info-value">
+                            ${order.pincode}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="items-card">
+
+                <div class="items-header">
+                    Order Items
+                </div>
+
+                <div style="overflow-x:auto;">
+
+                    <table class="items-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Product</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Line Total</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            ${itemsHtml}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div class="timeline-card">
+
+                <div class="section-title">
+                    Order Timeline
+                </div>
+
+                <div class="timeline-status">
+
+                    <div class="timeline-dot"></div>
+
+                    Current Status:
+                    ${formatStatus(
+                        order.order_status
+                    )}
+
+                </div>
+
+            </div>
+
+            <div class="order-actions">
+
+                <div class="section-title">
+                    Update Status
+                </div>
+
+                <select
+                    id="statusSelect"
+                    class="status-select"
+                >
+
+                    <option value="PENDING">
+                        PENDING
+                    </option>
+
+                    <option value="CONFIRMED">
+                        CONFIRMED
+                    </option>
+
+                    <option value="IN_PRODUCTION">
+                        IN_PRODUCTION
+                    </option>
+
+                    <option value="SHIPPED">
+                        SHIPPED
+                    </option>
+
+                    <option value="DELIVERED">
+                        DELIVERED
+                    </option>
+
+                    <option value="CANCELLED">
+                        CANCELLED
+                    </option>
+
+                </select>
+
+                <button
+                    class="save-status-btn"
+                    onclick="updateStatus(${order.id})"
+                >
+
+                    Save Status
+
+                </button>
+
+            </div>
 
         `;
 
@@ -722,6 +865,23 @@ function closeModal() {
 
 }
 
+window.onclick = function(event) {
+
+    const modal =
+        document.getElementById(
+            "orderModal"
+        );
+
+    if (
+        event.target === modal
+    ) {
+
+        closeModal();
+
+    }
+
+};
+
 /* =========================================
    HELPERS
 ========================================= */
@@ -753,20 +913,3 @@ function formatStatus(status) {
     }
 
 }
-
-window.onclick = function(event) {
-
-    const modal =
-        document.getElementById(
-            "orderModal"
-        );
-
-    if (
-        event.target === modal
-    ) {
-
-        closeModal();
-
-    }
-
-};
