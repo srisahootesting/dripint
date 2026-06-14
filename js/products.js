@@ -6,10 +6,171 @@ let filteredProducts = [];
 let isEditMode = false;
 
 /* ==========================
+AUTH HELPERS
+========================== */
+
+function getToken() {
+
+    return localStorage.getItem(
+        "admin_token"
+    );
+}
+
+function logout() {
+
+    localStorage.removeItem(
+        "admin_token"
+    );
+
+    localStorage.removeItem(
+        "admin_user"
+    );
+
+    window.location.href =
+        "admin-login.html";
+}
+
+function handleUnauthorized() {
+
+    alert(
+        "Your session has expired. Please login again."
+    );
+
+    logout();
+}
+
+function getAuthHeaders() {
+
+    return {
+
+        "Content-Type":
+            "application/json",
+
+        "Authorization":
+            `Bearer ${getToken()}`
+    };
+}
+
+async function validateAdminSession() {
+
+    const token =
+        getToken();
+
+    if (!token) {
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_BASE}/admin/profile`,
+                {
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            handleUnauthorized();
+            return false;
+        }
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            handleUnauthorized();
+            return false;
+        }
+
+        let adminName = "Admin";
+
+        const storedUser =
+            localStorage.getItem(
+                "admin_user"
+            );
+
+        if (storedUser) {
+
+            try {
+
+                const user =
+                    JSON.parse(
+                        storedUser
+                    );
+
+                adminName =
+                    user.first_name ||
+                    user.name ||
+                    adminName;
+
+            } catch (e) {
+
+                console.error(e);
+            }
+        }
+
+        const adminUserEl =
+            document.getElementById(
+                "adminUser"
+            );
+
+        if (adminUserEl) {
+
+            adminUserEl.innerText =
+                adminName;
+        }
+
+        return true;
+
+    } catch (error) {
+
+        console.error(error);
+
+        handleUnauthorized();
+
+        return false;
+    }
+}
+
+/* ==========================
 PAGE LOAD
 ========================== */
 
 window.onload = async () => {
+
+    const isValid =
+        await validateAdminSession();
+
+    if (!isValid) {
+
+        return;
+    }
+
+    const logoutBtn =
+        document.getElementById(
+            "logoutBtn"
+        );
+
+    if (logoutBtn) {
+
+        logoutBtn.addEventListener(
+            "click",
+            logout
+        );
+    }
 
     await loadProducts();
 
@@ -36,20 +197,43 @@ async function loadProducts() {
 
     try {
 
-        const response = await fetch(
-            `${API_BASE}/admin/products`
-        );
+        const response =
+            await fetch(
+                `${API_BASE}/admin/products`,
+                {
+                    headers: {
+                        "Authorization":
+                            `Bearer ${getToken()}`
+                    }
+                }
+            );
 
-        const data = await response.json();
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
 
-        if (!data.success) {
-
-            alert("Failed to load products");
+            handleUnauthorized();
             return;
         }
 
-        allProducts = data.products;
-        filteredProducts = [...allProducts];
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            alert(
+                "Failed to load products"
+            );
+
+            return;
+        }
+
+        allProducts =
+            data.products || [];
+
+        filteredProducts =
+            [...allProducts];
 
         updateKPIs();
         renderProducts();
@@ -186,42 +370,32 @@ function renderProducts() {
             <tr>
 
                 <td>
-
                     <img
                         src="${imageUrl}"
                         class="product-image"
                         alt="Product">
-
                 </td>
 
                 <td>
-
                     <div class="product-name">
                         ${product.product_name || ""}
                     </div>
-
                 </td>
 
                 <td>
-
                     <div class="product-category">
                         ${product.category || ""}
                     </div>
-
                 </td>
 
                 <td>
-
                     ${product.qikink_product_id || ""}
-
                 </td>
 
                 <td>
-
                     ₹${parseFloat(
                         product.price || 0
                     ).toFixed(2)}
-
                 </td>
 
                 <td>
@@ -249,10 +423,7 @@ function renderProducts() {
 
                         <button
                             class="btn-toggle"
-                            onclick="toggleStatus(
-                                ${product.id},
-                                '${product.status}'
-                            )">
+                            onclick="toggleStatus(${product.id}, '${product.status}')">
 
                             ${toggleText}
 
@@ -269,7 +440,7 @@ function renderProducts() {
 }
 
 /* ==========================
-OPEN ADD MODAL
+MODAL FUNCTIONS
 ========================== */
 
 function openAddProductModal() {
@@ -293,10 +464,6 @@ function openAddProductModal() {
     ).style.display = "flex";
 }
 
-/* ==========================
-CLOSE MODAL
-========================== */
-
 function closeProductModal() {
 
     document.getElementById(
@@ -312,9 +479,25 @@ async function editProduct(id) {
 
     try {
 
-        const response = await fetch(
-            `${API_BASE}/admin/product/${id}`
-        );
+        const response =
+            await fetch(
+                `${API_BASE}/admin/product/${id}`,
+                {
+                    headers: {
+                        "Authorization":
+                            `Bearer ${getToken()}`
+                    }
+                }
+            );
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            handleUnauthorized();
+            return;
+        }
 
         const data =
             await response.json();
@@ -403,66 +586,29 @@ async function saveProduct(event) {
         const payload = {
 
             id:
-                document
-                    .getElementById(
-                        "productId"
-                    )
-                    .value,
+                document.getElementById("productId").value,
 
             qikink_product_id:
-                document
-                    .getElementById(
-                        "qikinkProductId"
-                    )
-                    .value,
+                document.getElementById("qikinkProductId").value,
 
             product_name:
-                document
-                    .getElementById(
-                        "productName"
-                    )
-                    .value,
+                document.getElementById("productName").value,
 
             category:
-                document
-                    .getElementById(
-                        "category"
-                    )
-                    .value,
+                document.getElementById("category").value,
 
             description:
-                document
-                    .getElementById(
-                        "description"
-                    )
-                    .value,
+                document.getElementById("description").value,
 
             image_url:
-                document
-                    .getElementById(
-                        "imageUrl"
-                    )
-                    .value,
+                document.getElementById("imageUrl").value,
 
             price:
-                document
-                    .getElementById(
-                        "price"
-                    )
-                    .value,
+                document.getElementById("price").value,
 
             status:
-                document
-                    .getElementById(
-                        "status"
-                    )
-                    .value
+                document.getElementById("status").value
         };
-
-        const endpoint =
-            isEditMode
-                ? "/admin/product"
-                : "/admin/product";
 
         const method =
             isEditMode
@@ -471,18 +617,26 @@ async function saveProduct(event) {
 
         const response =
             await fetch(
-                API_BASE + endpoint,
+                `${API_BASE}/admin/product`,
                 {
                     method,
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body: JSON.stringify(
-                        payload
-                    )
+                    headers:
+                        getAuthHeaders(),
+                    body:
+                        JSON.stringify(
+                            payload
+                        )
                 }
             );
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            handleUnauthorized();
+            return;
+        }
 
         const data =
             await response.json();
@@ -548,23 +702,25 @@ async function toggleStatus(
                 `${API_BASE}/admin/product-status`,
                 {
                     method: "PUT",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
+                    headers:
+                        getAuthHeaders(),
                     body: JSON.stringify({
-
                         product_id:
                             productId,
-
                         status:
                             newStatus
-
                     })
                 }
             );
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            handleUnauthorized();
+            return;
+        }
 
         const data =
             await response.json();
