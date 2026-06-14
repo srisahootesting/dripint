@@ -148,7 +148,20 @@ async function validateSession() {
             adminUser.innerText =
                 data.admin.first_name;
         }
+if (
+    data.admin.role !==
+    "SUPER_ADMIN"
+) {
 
+    alert(
+        "Access denied"
+    );
+
+    window.location.href =
+        "dashboard.html";
+
+    return;
+}
     } catch (error) {
 
         console.error(error);
@@ -288,11 +301,35 @@ function renderUsers() {
                 ${user.last_login || ""}
             </td>
 
-            <td>
+           <td>
 
-                Manage
+    ${
+        user.is_active == 1
+        ?
+        `<button
+            onclick="disableUser(${user.id})"
+            class="action-btn"
+            style="background:#dc2626;margin-right:6px;">
+            Disable
+        </button>`
+        :
+        `<button
+            onclick="enableUser(${user.id})"
+            class="action-btn"
+            style="background:#16a34a;margin-right:6px;">
+            Enable
+        </button>`
+    }
 
-            </td>
+    <button
+        onclick="resetPassword(${user.id})"
+        class="action-btn">
+
+        Reset Password
+
+    </button>
+
+</td>
 
         </tr>
         `;
@@ -403,6 +440,213 @@ async function createUser() {
 
         alert(
             "Failed to create user"
+        );
+    }
+}
+
+/* ==========================
+ENABLE USER
+========================== */
+
+async function enableUser(
+    adminId
+) {
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_BASE}/admin/user-status`,
+                {
+                    method: "PUT",
+
+                    headers: {
+
+                        "Content-Type":
+                        "application/json",
+
+                        Authorization:
+                        `Bearer ${getToken()}`
+                    },
+
+                    body: JSON.stringify({
+
+                        admin_id:
+                            adminId,
+
+                        is_active: 1
+
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            alert(
+                data.error
+            );
+
+            return;
+        }
+
+        await loadUsers();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Failed to enable user"
+        );
+    }
+}
+
+
+/* ==========================
+RESET PASSWORD
+========================== */
+
+async function resetPassword(
+    adminId
+) {
+
+    const newPassword =
+        prompt(
+            "Enter new password"
+        );
+
+    if (
+        !newPassword ||
+        newPassword.trim() === ""
+    ) {
+
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_BASE}/admin/user-password`,
+                {
+                    method: "PUT",
+
+                    headers: {
+
+                        "Content-Type":
+                        "application/json",
+
+                        Authorization:
+                        `Bearer ${getToken()}`
+                    },
+
+                    body: JSON.stringify({
+
+                        admin_id:
+                            adminId,
+
+                        password:
+                            newPassword
+
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            alert(
+                data.error
+            );
+
+            return;
+        }
+
+        alert(
+            "Password reset successfully"
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Failed to reset password"
+        );
+    }
+}
+
+/* ==========================
+DISABLE USER
+========================== */
+
+async function disableUser(
+    adminId
+) {
+
+    const confirmed =
+        confirm(
+            "Disable this user?"
+        );
+
+    if (!confirmed) {
+
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_BASE}/admin/user-status`,
+                {
+                    method: "PUT",
+
+                    headers: {
+
+                        "Content-Type":
+                        "application/json",
+
+                        Authorization:
+                        `Bearer ${getToken()}`
+                    },
+
+                    body: JSON.stringify({
+
+                        admin_id:
+                            adminId,
+
+                        is_active: 0
+
+                    })
+                }
+            );
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            alert(
+                data.error
+            );
+
+            return;
+        }
+
+        await loadUsers();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Failed to disable user"
         );
     }
 }
