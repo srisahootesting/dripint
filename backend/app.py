@@ -34,7 +34,19 @@ CORS(
                 "https://www.7sandbox.icu"
             ]
         }
-    }
+    },
+    supports_credentials=True,
+    allow_headers=[
+        "Content-Type",
+        "Authorization"
+    ],
+    methods=[
+        "GET",
+        "POST",
+        "PUT",
+        "DELETE",
+        "OPTIONS"
+    ]
 )
 
 resend.api_key = os.getenv("RESEND_API_KEY")
