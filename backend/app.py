@@ -9,6 +9,7 @@ import requests
 
 from qikink_service import test_qikink_credentials
 
+from admin_auth import admin_auth_bp
 
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -16,6 +17,8 @@ from datetime import datetime, timedelta
 load_dotenv()
 
 app = Flask(__name__)
+
+app.register_blueprint(admin_auth_bp)
 
 # Allow only frontend domains
 # CORS Configuration
