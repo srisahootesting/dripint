@@ -5,7 +5,10 @@ import pymysql
 
 from datetime import datetime, timedelta
 from functools import wraps
-from werkzeug.security import check_password_hash
+from werkzeug.security import (
+    check_password_hash,
+    generate_password_hash
+)
 
 
 admin_auth_bp = Blueprint(
@@ -137,6 +140,63 @@ def admin_required(f):
 
     return decorated
 
+# ====================================
+# SUPER ADMIN DECORATOR
+# ====================================
+
+def super_admin_required(f):
+
+    @wraps(f)
+    def decorated(*args, **kwargs):
+
+        auth_header = request.headers.get(
+            "Authorization"
+        )
+
+        if not auth_header:
+
+            return jsonify({
+
+                "success": False,
+                "error": "Authorization token missing"
+
+            }), 401
+
+        token = auth_header.replace(
+            "Bearer ",
+            ""
+        )
+
+        payload = validate_admin_token(
+            token
+        )
+
+        if not payload:
+
+            return jsonify({
+
+                "success": False,
+                "error": "Invalid or expired token"
+
+            }), 401
+
+        if payload.get("role") != "SUPER_ADMIN":
+
+            return jsonify({
+
+                "success": False,
+                "error": "Access denied"
+
+            }), 403
+
+        request.admin = payload
+
+        return f(
+            *args,
+            **kwargs
+        )
+
+    return decorated
 
 # ====================================
 # ADMIN LOGIN
@@ -370,3 +430,231 @@ def admin_profile():
             "error": str(e)
 
         }), 500
+    
+# ====================================
+# GET ADMIN USERS
+# ====================================
+
+@admin_auth_bp.route(
+    "/admin/users",
+    methods=["GET"]
+)
+@super_admin_required
+def get_admin_users():
+
+    conn = get_db_connection()
+
+    try:
+
+        with conn.cursor() as cursor:
+
+            cursor.execute(
+                """
+                SELECT
+                    id,
+                    first_name,
+                    last_name,
+                    email,
+                    role,
+                    is_active,
+                    created_at,
+                    last_login
+                FROM admin_users
+                ORDER BY id DESC
+                """
+            )
+
+            users = cursor.fetchall()
+
+            return jsonify({
+
+                "success": True,
+                "users": users
+
+            })
+
+    finally:
+
+        conn.close()
+
+# ====================================
+# CREATE ADMIN USER
+# ====================================
+
+@admin_auth_bp.route(
+    "/admin/user",
+    methods=["POST"]
+)
+@super_admin_required
+def create_admin_user():
+
+    conn = get_db_connection()
+
+    try:
+
+        data = request.get_json()
+
+        password_hash = generate_password_hash(
+            data["password"]
+        )
+
+        with conn.cursor() as cursor:
+
+            cursor.execute(
+                """
+                INSERT INTO admin_users
+                (
+                    first_name,
+                    last_name,
+                    email,
+                    password_hash,
+                    role,
+                    is_active
+                )
+                VALUES
+                (%s,%s,%s,%s,%s,1)
+                """,
+                (
+                    data["first_name"],
+                    data["last_name"],
+                    data["email"].lower(),
+                    password_hash,
+                    data["role"]
+                )
+            )
+
+            conn.commit()
+
+            return jsonify({
+
+                "success": True,
+                "id": cursor.lastrowid
+
+            })
+
+    except Exception as e:
+
+        conn.rollback()
+
+        return jsonify({
+
+            "success": False,
+            "error": str(e)
+
+        }), 500
+
+    finally:
+
+        conn.close()
+
+# ====================================
+# UPDATE ADMIN STATUS
+# ====================================
+
+@admin_auth_bp.route(
+    "/admin/user-status",
+    methods=["PUT"]
+)
+@super_admin_required
+def update_admin_status():
+
+    conn = get_db_connection()
+
+    try:
+
+        data = request.get_json()
+
+        with conn.cursor() as cursor:
+
+            cursor.execute(
+                """
+                UPDATE admin_users
+                SET is_active=%s
+                WHERE id=%s
+                """,
+                (
+                    data["is_active"],
+                    data["admin_id"]
+                )
+            )
+
+            conn.commit()
+
+            return jsonify({
+
+                "success": True
+
+            })
+
+    except Exception as e:
+
+        conn.rollback()
+
+        return jsonify({
+
+            "success": False,
+            "error": str(e)
+
+        }), 500
+
+    finally:
+
+        conn.close()
+
+# ====================================
+# RESET ADMIN PASSWORD
+# ====================================
+
+@admin_auth_bp.route(
+    "/admin/user-password",
+    methods=["PUT"]
+)
+@super_admin_required
+def reset_admin_password():
+
+    conn = get_db_connection()
+
+    try:
+
+        data = request.get_json()
+
+        password_hash = generate_password_hash(
+            data["password"]
+        )
+
+        with conn.cursor() as cursor:
+
+            cursor.execute(
+                """
+                UPDATE admin_users
+                SET password_hash=%s
+                WHERE id=%s
+                """,
+                (
+                    password_hash,
+                    data["admin_id"]
+                )
+            )
+
+            conn.commit()
+
+            return jsonify({
+
+                "success": True
+
+            })
+
+    except Exception as e:
+
+        conn.rollback()
+
+        return jsonify({
+
+            "success": False,
+            "error": str(e)
+
+        }), 500
+
+    finally:
+
+        conn.close()

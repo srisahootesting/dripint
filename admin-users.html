@@ -6,7 +6,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Drip Designs Admin Dashboard</title>
+<title>Admin Users | Drip Designs</title>
 
 <link rel="stylesheet" href="css/style.css">
 <link rel="stylesheet" href="css/admin-layout.css">
@@ -54,7 +54,7 @@ rel="stylesheet">
 
             <a
                 href="dashboard.html"
-                class="sidebar-link active">
+                class="sidebar-link">
 
                 <span class="sidebar-icon">📋</span>
 
@@ -84,7 +84,7 @@ rel="stylesheet">
 
             <a
                 href="admin-users.html"
-                class="sidebar-link">
+                class="sidebar-link active">
 
                 <span class="sidebar-icon">👥</span>
 
@@ -116,13 +116,13 @@ rel="stylesheet">
 
                 <div class="admin-topbar-title">
 
-                    Order Dashboard
+                    Admin Users
 
                 </div>
 
                 <div class="admin-topbar-subtitle">
 
-                    Manage customer orders
+                    Manage Admin & Manager accounts
 
                 </div>
 
@@ -170,11 +170,11 @@ rel="stylesheet">
                 <div class="admin-header">
 
                     <div class="admin-title">
-                        Order Management
+                        User Management
                     </div>
 
                     <div class="admin-subtitle">
-                        Shopify-style admin dashboard for managing customer orders
+                        Create and manage administrator accounts
                     </div>
 
                 </div>
@@ -186,11 +186,11 @@ rel="stylesheet">
                     <div class="kpi-card">
 
                         <div class="kpi-label">
-                            Total Orders
+                            Total Users
                         </div>
 
                         <div
-                            id="totalOrders"
+                            id="totalUsers"
                             class="kpi-value">
                             0
                         </div>
@@ -200,11 +200,11 @@ rel="stylesheet">
                     <div class="kpi-card">
 
                         <div class="kpi-label">
-                            Pending Orders
+                            Active Users
                         </div>
 
                         <div
-                            id="pendingOrders"
+                            id="activeUsers"
                             class="kpi-value">
                             0
                         </div>
@@ -214,11 +214,11 @@ rel="stylesheet">
                     <div class="kpi-card">
 
                         <div class="kpi-label">
-                            Delivered Orders
+                            Disabled Users
                         </div>
 
                         <div
-                            id="deliveredOrders"
+                            id="disabledUsers"
                             class="kpi-value">
                             0
                         </div>
@@ -228,13 +228,13 @@ rel="stylesheet">
                     <div class="kpi-card">
 
                         <div class="kpi-label">
-                            Total Revenue
+                            Administrators
                         </div>
 
                         <div
-                            id="totalRevenue"
+                            id="adminUsers"
                             class="kpi-value">
-                            ₹0
+                            0
                         </div>
 
                     </div>
@@ -251,55 +251,25 @@ rel="stylesheet">
                             type="text"
                             id="searchInput"
                             class="search-input"
-                            placeholder="Search by Order Number, Customer Name or Phone Number">
+                            placeholder="Search by Name, Email or Role">
 
                     </div>
 
-                    <div class="filter-row">
+                        <div
+                            style="
+                            display:flex;
+                            justify-content:flex-end;
+                            ">
 
-                        <button
-                            class="filter-btn active"
-                            data-status="ALL">
-                            All
-                        </button>
+                            <button
+                                id="addUserBtn"
+                                class="action-btn">
 
-                        <button
-                            class="filter-btn"
-                            data-status="PENDING">
-                            Pending
-                        </button>
+                                + Add User
 
-                        <button
-                            class="filter-btn"
-                            data-status="CONFIRMED">
-                            Confirmed
-                        </button>
+                            </button>
 
-                        <button
-                            class="filter-btn"
-                            data-status="IN_PRODUCTION">
-                            Production
-                        </button>
-
-                        <button
-                            class="filter-btn"
-                            data-status="SHIPPED">
-                            Shipped
-                        </button>
-
-                        <button
-                            class="filter-btn"
-                            data-status="DELIVERED">
-                            Delivered
-                        </button>
-
-                        <button
-                            class="filter-btn"
-                            data-status="CANCELLED">
-                            Cancelled
-                        </button>
-
-                    </div>
+                        </div>
 
                 </div>
 
@@ -308,7 +278,7 @@ rel="stylesheet">
                 <div class="table-card">
 
                     <div class="table-header">
-                        Orders
+                        Admin Users
                     </div>
 
                     <div style="overflow-x:auto;">
@@ -319,26 +289,26 @@ rel="stylesheet">
 
                                 <tr>
 
-                                    <th>Order Number</th>
-                                    <th>Customer</th>
-                                    <th>Phone</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                    <th>Action</th>
-
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Role</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Last Login</th>
+                                        <th>Actions</th>
                                 </tr>
 
                             </thead>
 
-                            <tbody id="ordersTable">
+                            <tbody id="usersTable">
 
                                 <tr>
 
-                                    <td colspan="7">
+                                    <td colspan="8">
 
                                         <div class="empty-state">
-                                            Loading Orders...
+                                            Loading Users...
                                         </div>
 
                                     </td>
@@ -361,23 +331,79 @@ rel="stylesheet">
 
 </div>
 
-<!-- ORDER DETAILS MODAL -->
+<!-- ADD USER MODAL -->
 
 <div
-    id="orderModal"
+    id="userModal"
     class="order-modal">
 
-    <div class="order-modal-content">
+    <div
+        class="order-modal-content"
+        style="max-width:700px;">
 
         <span
             class="modal-close"
-            onclick="closeModal()">
+            onclick="closeUserModal()">
 
             ×
 
         </span>
 
-        <div id="orderDetails">
+        <h2
+            style="margin-bottom:25px;">
+
+            Add User
+
+        </h2>
+
+        <div
+            style="
+            display:grid;
+            gap:16px;
+            ">
+
+            <input
+                id="firstName"
+                class="search-input"
+                placeholder="First Name">
+
+            <input
+                id="lastName"
+                class="search-input"
+                placeholder="Last Name">
+
+            <input
+                id="email"
+                class="search-input"
+                placeholder="Email">
+
+            <input
+                id="password"
+                type="password"
+                class="search-input"
+                placeholder="Password">
+
+            <select
+                id="role"
+                class="status-select">
+
+                <option value="ADMIN">
+                    ADMIN
+                </option>
+
+                <option value="MANAGER">
+                    MANAGER
+                </option>
+
+            </select>
+
+            <button
+                id="saveUserBtn"
+                class="action-btn">
+
+                Create User
+
+            </button>
 
         </div>
 
@@ -385,7 +411,7 @@ rel="stylesheet">
 
 </div>
 
-<script src="js/dashboard.js"></script>
+<script src="js/admin-users.js"></script>
 
 </body>
 
