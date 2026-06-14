@@ -95,13 +95,17 @@ async function loadProducts() {
                 <div class="product-card">
 
                     <div class="product-image">
-                        <img
-                            src="${product.image_url}"
+                    <img
+                        src="${product.image_url}"
+                        onerror="this.src='assets/no-image.png'"
                             alt="${product.product_name}"
+                            onerror="this.src='assets/no-image.png'"
                             style="
                                 width:100%;
-                                height:250px;
-                                object-fit:cover;
+                                height:320px;
+                                object-fit:contain;
+                                background:white;
+                                padding:10px;
                             "
                         >
                     </div>
