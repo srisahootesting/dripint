@@ -94,6 +94,10 @@ async function loadProducts() {
             productGrid.innerHTML += `
                 <div class="product-card">
 
+                    <div class="product-badge">
+                        NEW
+                    </div>
+
                     <div class="product-image">
                     <img
                         src="${product.image_url}"
@@ -108,6 +112,12 @@ async function loadProducts() {
                                 padding:10px;
                             "
                         >
+                        <button
+                            class="quick-view-btn"
+                            onclick="viewProduct(${product.id})"
+                        >
+                            Quick View
+                        </button>
                     </div>
 
                     <h3>${product.product_name}</h3>
