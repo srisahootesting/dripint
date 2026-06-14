@@ -9,7 +9,7 @@ import requests
 
 from qikink_service import test_qikink_credentials
 
-from admin_auth import admin_auth_bp
+from admin_auth import admin_auth_bp, admin_required
 
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -1022,6 +1022,7 @@ def update_settings():
 # ====================================
 
 @app.route("/admin/orders", methods=["GET"])
+@admin_required
 def admin_orders():
 
     conn = get_db_connection()
@@ -1069,6 +1070,7 @@ def admin_orders():
 # ====================================
 
 @app.route("/admin/order/<int:order_id>", methods=["GET"])
+@admin_required
 def admin_order_details(order_id):
 
     conn = get_db_connection()
@@ -1129,7 +1131,9 @@ def admin_order_details(order_id):
 # ====================================
 
 @app.route("/admin/order-status", methods=["PUT"])
+@admin_required
 def update_order_status():
+
 
     conn = get_db_connection()
 

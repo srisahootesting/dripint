@@ -1,11 +1,142 @@
 const API_BASE =
     "https://dripint-backend.onrender.com";
 
+/* =========================================
+   ADMIN AUTH
+========================================= */
+
+const adminToken =
+    localStorage.getItem(
+        "admin_token"
+    );
+
+const adminUser =
+    JSON.parse(
+        localStorage.getItem(
+            "admin_user"
+        ) || "{}"
+    );
+
+if (!adminToken) {
+
+    window.location.href =
+        "admin-login.html";
+
+}
+
+/* =========================================
+   ADMIN INIT
+========================================= */
+
+function initializeAdmin() {
+
+    const adminUserElement =
+        document.getElementById(
+            "adminUser"
+        );
+
+    if (
+        adminUserElement &&
+        adminUser &&
+        adminUser.first_name
+    ) {
+
+        adminUserElement.textContent =
+            adminUser.first_name;
+
+    }
+
+    const logoutBtn =
+        document.getElementById(
+            "logoutBtn"
+        );
+
+    if (logoutBtn) {
+
+        logoutBtn.addEventListener(
+            "click",
+            logout
+        );
+
+    }
+
+}
+
+function logout() {
+
+    localStorage.removeItem(
+        "admin_token"
+    );
+
+    localStorage.removeItem(
+        "admin_user"
+    );
+
+    window.location.href =
+        "admin-login.html";
+
+}
+
+/* =========================================
+   AUTHORIZED FETCH
+========================================= */
+
+async function authorizedFetch(
+    url,
+    options = {}
+) {
+
+    const headers = {
+
+        ...(options.headers || {}),
+
+        Authorization:
+            `Bearer ${adminToken}`
+
+    };
+
+    const response =
+        await fetch(
+            url,
+            {
+                ...options,
+                headers
+            }
+        );
+
+    if (
+        response.status === 401 ||
+        response.status === 403
+    ) {
+
+        localStorage.removeItem(
+            "admin_token"
+        );
+
+        localStorage.removeItem(
+            "admin_user"
+        );
+
+        window.location.href =
+            "admin-login.html";
+
+        throw new Error(
+            "Session expired"
+        );
+
+    }
+
+    return response;
+
+}
+
 let allOrders = [];
 let filteredOrders = [];
 let currentFilter = "ALL";
 
 window.onload = () => {
+
+    initializeAdmin();
 
     initializeFilters();
 
@@ -56,7 +187,7 @@ async function loadOrders() {
     try {
 
         const response =
-            await fetch(
+            await authorizedFetch(
                 `${API_BASE}/admin/orders`
             );
 
@@ -388,7 +519,7 @@ async function viewOrder(orderId) {
     try {
 
         const response =
-            await fetch(
+            await authorizedFetch(
                 `${API_BASE}/admin/order/${orderId}`
             );
 
@@ -797,7 +928,7 @@ async function updateStatus(orderId) {
     try {
 
         const response =
-            await fetch(
+            await authorizedFetch(
                 `${API_BASE}/admin/order-status`,
                 {
                     method: "PUT",

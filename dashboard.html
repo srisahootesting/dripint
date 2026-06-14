@@ -118,9 +118,36 @@ rel="stylesheet">
 
             </div>
 
-            <div class="admin-user">
+            <div
+                style="
+                display:flex;
+                align-items:center;
+                gap:12px;
+                ">
 
-                Admin
+                <div
+                    id="adminUser"
+                    class="admin-user">
+
+                    Admin
+
+                </div>
+
+                <button
+                    id="logoutBtn"
+                    style="
+                    background:#dc2626;
+                    color:white;
+                    border:none;
+                    padding:10px 16px;
+                    border-radius:10px;
+                    cursor:pointer;
+                    font-weight:600;
+                    ">
+
+                    Logout
+
+                </button>
 
             </div>
 
@@ -324,9 +351,7 @@ rel="stylesheet">
 
 </div>
 
-<!-- ===================================================== -->
-<!-- SHOPIFY STYLE ORDER DETAILS MODAL V2 -->
-<!-- ===================================================== -->
+<!-- ORDER DETAILS MODAL -->
 
 <div
     id="orderModal"
@@ -341,8 +366,6 @@ rel="stylesheet">
             ×
 
         </span>
-
-        <!-- Dynamic Content Rendered By dashboard.js -->
 
         <div id="orderDetails">
 
