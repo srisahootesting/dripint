@@ -603,6 +603,7 @@ def create_order():
 # ====================================
 
 @app.route("/admin/products", methods=["GET"])
+@admin_required
 def admin_products():
 
     conn = get_db_connection()
@@ -652,6 +653,7 @@ def admin_products():
 # ====================================
 
 @app.route("/admin/product/<int:product_id>", methods=["GET"])
+@admin_required
 def admin_product_details(product_id):
 
     conn = get_db_connection()
@@ -700,6 +702,7 @@ def admin_product_details(product_id):
 # ====================================
 
 @app.route("/admin/product", methods=["POST"])
+@admin_required
 def add_product():
 
     conn = get_db_connection()
@@ -762,6 +765,7 @@ def add_product():
 # ====================================
 
 @app.route("/admin/product", methods=["PUT"])
+@admin_required
 def update_product():
 
     conn = get_db_connection()
@@ -822,6 +826,7 @@ def update_product():
 # ====================================
 
 @app.route("/admin/product-status", methods=["PUT"])
+@admin_required
 def update_product_status():
 
     conn = get_db_connection()
@@ -880,6 +885,7 @@ def update_product_status():
 
 
 @app.route("/admin/settings", methods=["GET"])
+@admin_required
 def get_settings():
 
     try:
@@ -912,8 +918,8 @@ def get_settings():
 
         conn.close()
 
-@app.route("/admin/settings", methods=["PUT"]
-)
+@app.route("/admin/settings", methods=["PUT"])
+@admin_required
 def update_settings():
 
     try:
