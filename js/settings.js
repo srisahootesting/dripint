@@ -6,10 +6,171 @@ const API_BASE =
 "https://dripint-backend.onrender.com";
 
 /* ==========================================
+   AUTH HELPERS
+========================================== */
+
+function getToken() {
+
+    return localStorage.getItem(
+        "admin_token"
+    );
+}
+
+function logout() {
+
+    localStorage.removeItem(
+        "admin_token"
+    );
+
+    localStorage.removeItem(
+        "admin_user"
+    );
+
+    window.location.href =
+        "admin-login.html";
+}
+
+function handleUnauthorized() {
+
+    alert(
+        "Your session has expired. Please login again."
+    );
+
+    logout();
+}
+
+function getAuthHeaders() {
+
+    return {
+
+        "Content-Type":
+            "application/json",
+
+        "Authorization":
+            `Bearer ${getToken()}`
+    };
+}
+
+async function validateAdminSession() {
+
+    const token =
+        getToken();
+
+    if (!token) {
+
+        window.location.href =
+            "admin-login.html";
+
+        return false;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                `${API_BASE}/admin/profile`,
+                {
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    }
+                }
+            );
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            handleUnauthorized();
+            return false;
+        }
+
+        const data =
+            await response.json();
+
+        if (!data.success) {
+
+            handleUnauthorized();
+            return false;
+        }
+
+        let adminName = "Admin";
+
+        const storedUser =
+            localStorage.getItem(
+                "admin_user"
+            );
+
+        if (storedUser) {
+
+            try {
+
+                const user =
+                    JSON.parse(
+                        storedUser
+                    );
+
+                adminName =
+                    user.first_name ||
+                    user.name ||
+                    adminName;
+
+            } catch (e) {
+
+                console.error(e);
+            }
+        }
+
+        const adminUserEl =
+            document.getElementById(
+                "adminUser"
+            );
+
+        if (adminUserEl) {
+
+            adminUserEl.innerText =
+                adminName;
+        }
+
+        return true;
+
+    } catch (error) {
+
+        console.error(error);
+
+        handleUnauthorized();
+
+        return false;
+    }
+}
+
+/* ==========================================
    PAGE LOAD
 ========================================== */
 
 window.onload = async function () {
+
+    const isValid =
+        await validateAdminSession();
+
+    if (!isValid) {
+
+        return;
+    }
+
+    const logoutBtn =
+        document.getElementById(
+            "logoutBtn"
+        );
+
+    if (logoutBtn) {
+
+        logoutBtn.addEventListener(
+            "click",
+            logout
+        );
+    }
 
     await loadSettings();
 };
@@ -24,8 +185,23 @@ async function loadSettings() {
 
         const response =
             await fetch(
-                `${API_BASE}/admin/settings`
+                `${API_BASE}/admin/settings`,
+                {
+                    headers: {
+                        "Authorization":
+                            `Bearer ${getToken()}`
+                    }
+                }
             );
+
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            handleUnauthorized();
+            return;
+        }
 
         const data =
             await response.json();
@@ -33,7 +209,8 @@ async function loadSettings() {
         if (!data.success) {
 
             throw new Error(
-                data.error || "Failed to load settings"
+                data.error ||
+                "Failed to load settings"
             );
         }
 
@@ -181,10 +358,8 @@ async function saveSettings() {
                 {
                     method: "PUT",
 
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
+                    headers:
+                        getAuthHeaders(),
 
                     body:
                         JSON.stringify(
@@ -193,13 +368,23 @@ async function saveSettings() {
                 }
             );
 
+        if (
+            response.status === 401 ||
+            response.status === 403
+        ) {
+
+            handleUnauthorized();
+            return;
+        }
+
         const data =
             await response.json();
 
         if (!data.success) {
 
             throw new Error(
-                data.error || "Save failed"
+                data.error ||
+                "Save failed"
             );
         }
 

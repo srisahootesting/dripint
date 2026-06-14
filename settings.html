@@ -20,8 +20,6 @@ rel="stylesheet">
 
 <div class="admin-layout">
 
-    <!-- SIDEBAR -->
-
     <aside class="admin-sidebar">
 
         <div class="sidebar-header">
@@ -91,8 +89,6 @@ rel="stylesheet">
 
     </aside>
 
-    <!-- MAIN -->
-
     <main class="admin-main">
 
         <div class="admin-topbar">
@@ -109,8 +105,35 @@ rel="stylesheet">
 
             </div>
 
-            <div class="admin-user">
-                Admin
+            <div
+                style="
+                display:flex;
+                align-items:center;
+                gap:12px;
+            ">
+
+                <div
+                    class="admin-user"
+                    id="adminUser">
+
+                    Admin
+
+                </div>
+
+                <button
+                    id="logoutBtn"
+                    style="
+                    padding:10px 16px;
+                    border:none;
+                    border-radius:8px;
+                    cursor:pointer;
+                    font-weight:600;
+                ">
+
+                    Logout
+
+                </button>
+
             </div>
 
         </div>
@@ -121,8 +144,6 @@ rel="stylesheet">
 
                 <div class="settings-grid">
 
-                    <!-- STORE SETTINGS -->
-
                     <div class="settings-card">
 
                         <h2>Store Settings</h2>
@@ -132,8 +153,7 @@ rel="stylesheet">
                             <input
                                 type="text"
                                 class="form-control"
-                                id="storeName"
-                                value="Drip Designs">
+                                id="storeName">
                         </div>
 
                         <div class="form-group">
@@ -161,8 +181,6 @@ rel="stylesheet">
                         </div>
 
                     </div>
-
-                    <!-- BRANDING -->
 
                     <div class="settings-card">
 
@@ -202,8 +220,6 @@ rel="stylesheet">
 
                     </div>
 
-                    <!-- RAZORPAY -->
-
                     <div class="settings-card">
 
                         <h2>Payment Settings</h2>
@@ -227,8 +243,6 @@ rel="stylesheet">
 
                     </div>
 
-                    <!-- QIKINK -->
-
                     <div class="settings-card">
 
                         <h2>Qikink Settings</h2>
@@ -251,8 +265,6 @@ rel="stylesheet">
 
                     </div>
 
-                    <!-- ADMIN -->
-
                     <div class="settings-card">
 
                         <h2>Admin Settings</h2>
@@ -262,21 +274,25 @@ rel="stylesheet">
                             <input
                                 type="text"
                                 class="form-control"
-                                value="Admin">
+                                value="Admin"
+                                readonly>
                         </div>
 
                         <div class="form-group">
                             <label>Admin Email</label>
                             <input
                                 type="email"
-                                class="form-control">
+                                class="form-control"
+                                readonly>
                         </div>
 
                         <div class="form-group">
                             <label>Change Password</label>
                             <input
                                 type="password"
-                                class="form-control">
+                                class="form-control"
+                                readonly
+                                placeholder="Coming Soon">
                         </div>
 
                     </div>
