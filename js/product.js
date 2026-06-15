@@ -5,8 +5,7 @@ let selectedQuantity = 1;
 
 let selectedColor = "White";
 
-let selectedImage =
-    "assets/products/chess-white.jpg";
+let selectedImage = "";
 
 window.onload = async () => {
 
@@ -68,7 +67,7 @@ async function loadProduct(productId) {
 
                     <img
                         id="mainProductImage"
-                        src="assets/products/chess-white.jpg"
+                        src="${product.image_url}"
                         alt="${product.product_name}"
                         style="
                             width:100%;
@@ -130,7 +129,7 @@ async function loadProduct(productId) {
                     </p>
 
                     <h1>
-                        Vintage Chess Oversized Tee
+                        ${product.product_name}
                     </h1>
 
                     <h2>
@@ -148,11 +147,7 @@ async function loadProduct(productId) {
                     </p>
 
                     <p>
-                        Premium oversized cotton
-                        t-shirt featuring a retro
-                        chess artwork.
-                        Designed for chess lovers
-                        and streetwear enthusiasts.
+                        ${product.description || "Premium quality apparel from Drip Designs."}
                     </p>
 
                     <div
