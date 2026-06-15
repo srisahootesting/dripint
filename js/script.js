@@ -406,3 +406,13 @@ function logout() {
     location.reload();
 
 }
+
+
+function toggleMenu(){
+
+    document
+    .getElementById("mobileMenu")
+    .classList
+    .toggle("active");
+
+}
