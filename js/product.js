@@ -3,9 +3,13 @@ const API_BASE =
 
 let selectedQuantity = 1;
 
-let selectedColor = "White";
-
 let selectedImage = "";
+
+let productVariants = [];
+
+let selectedColor = "";
+
+let selectedSize = "";
 
 window.onload = async () => {
 
@@ -48,22 +52,37 @@ async function loadProduct(productId) {
         const product =
             await response.json();
 
+        const variantResponse =
+            await fetch(
+                API_BASE +
+                "/product/" +
+                productId +
+                "/variants"
+            );
+
+        productVariants =
+            await variantResponse.json();
+
+        if(productVariants.length > 0){
+
+            selectedColor =
+                productVariants[0].color;
+
+            selectedSize =
+                productVariants[0].size;
+
+        }
+
+        selectedImage =
+            product.image_url;
+
         document.getElementById(
             "productContainer"
         ).innerHTML = `
 
-            <div
-                style="
-                    max-width:1200px;
-                    margin:auto;
-                    display:grid;
-                    grid-template-columns:1fr 1fr;
-                    gap:50px;
-                    align-items:start;
-                "
-            >
+            <div class="product-detail-grid">
 
-                <div>
+                <div class="product-gallery">
 
                     <img
                         id="mainProductImage"
@@ -75,76 +94,83 @@ async function loadProduct(productId) {
                         "
                     >
 
-                    <div
-                        class="thumbnail-container"
-                    >
-
-                        <div
-                            id="whiteThumb"
-                            class="thumbnail"
-                            style="
-                                border:3px solid #0f4db8;
-                            "
-                            onclick="
-                                changeVariant(
-                                    'White',
-                                    'assets/products/chess-white.jpg'
-                                )
-                            "
-                        >
-                            <img
-                                src="assets/products/chess-white.jpg"
-                            >
-                        </div>
-
-                        <div
-                            id="blackThumb"
-                            class="thumbnail"
-                            onclick="
-                                changeVariant(
-                                    'Black',
-                                    'assets/products/chess-black.jpg'
-                                )
-                            "
-                        >
-                            <img
-                                src="assets/products/chess-black.jpg"
-                            >
-                        </div>
-
-                    </div>
-
-                    <h3
-                        id="selectedColorLabel"
-                    >
-                        Selected Color: White
-                    </h3>
-
                 </div>
 
-                <div>
+                <div class="product-info">
 
-                    <p>
+                    <div class="product-category">
                         ${product.category}
-                    </p>
+                    </div>
 
                     <h1>
                         ${product.product_name}
                     </h1>
 
-                    <h2>
+                    <div class="product-price">
                         ₹${product.price}
-                    </h2>
+                    </div>
 
-                    <p
-                        style="
-                            color:green;
-                            font-weight:600;
-                            margin-bottom:20px;
-                        "
-                    >
-                        ● In Stock
-                    </p>
+                    <div class="stock-badge">
+                            ✓ In Stock
+                    </div>
+
+                    <div id="colorSection">
+
+                        <h3>Color</h3>
+
+                        <div id="colorOptions">
+
+                            ${
+                                [...new Set(
+                                    productVariants.map(
+                                        v => v.color
+                                    )
+                                )]
+                                .map(color => `
+                                    <button
+                                        class="variant-btn"
+                                        onclick="
+                                            selectColor(
+                                                '${color}'
+                                            )
+                                        "
+                                    >
+                                        ${color}
+                                    </button>
+                                `)
+                                .join("")
+                            }
+
+                        </div>
+
+                    </div>
+
+                    <div id="sizeSection">
+
+                        <h3>Size</h3>
+
+                        <select
+                            id="sizeSelect"
+                            onchange="selectSize()"
+                        >
+
+                            ${
+                                [...new Set(
+                                    productVariants.map(
+                                        v => v.size
+                                    )
+                                )]
+                                .map(size => `
+                                    <option value="${size}">
+                                        ${size}
+                                    </option>
+                                `)
+                                .join("")
+                            }
+
+                        </select>
+
+                    </div>
 
                     <p>
                         ${product.description || "Premium quality apparel from Drip Designs."}
@@ -176,19 +202,23 @@ async function loadProduct(productId) {
 
                     </div>
 
-                    <button
-                        class="primary-btn"
-                        onclick='addToCart(${JSON.stringify(product)})'
-                    >
-                        Add To Cart
-                    </button>
+                    <div class="product-actions">
 
-                    <button
-                        class="secondary-btn"
-                        onclick="buyNow()"
-                    >
-                        Buy Now
-                    </button>
+                        <button
+                            class="primary-btn"
+                            onclick='addToCart(${JSON.stringify(product)})'
+                        >
+                            Add To Cart
+                        </button>
+
+                        <button
+                            class="secondary-btn"
+                            onclick="buyNow()"
+                        >
+                            Buy Now
+                        </button>
+
+                    </div>
 
                 </div>
 
@@ -204,57 +234,6 @@ async function loadProduct(productId) {
 
 }
 
-function changeVariant(
-    color,
-    imagePath
-) {
-
-    selectedColor =
-        color;
-
-    selectedImage =
-        imagePath;
-
-    document.getElementById(
-        "mainProductImage"
-    ).src =
-        imagePath;
-
-    document.getElementById(
-        "selectedColorLabel"
-    ).innerText =
-        "Selected Color: " +
-        color;
-
-    document.getElementById(
-        "whiteThumb"
-    ).style.border =
-        "2px solid #ddd";
-
-    document.getElementById(
-        "blackThumb"
-    ).style.border =
-        "2px solid #ddd";
-
-    if (
-        color === "White"
-    ) {
-
-        document.getElementById(
-            "whiteThumb"
-        ).style.border =
-            "3px solid #0f4db8";
-
-    } else {
-
-        document.getElementById(
-            "blackThumb"
-        ).style.border =
-            "3px solid #0f4db8";
-
-    }
-
-}
 
 function increaseQty() {
 
@@ -284,6 +263,21 @@ function decreaseQty() {
 
 }
 
+function selectColor(color){
+
+    selectedColor = color;
+
+}
+
+function selectSize(){
+
+    selectedSize =
+        document.getElementById(
+            "sizeSelect"
+        ).value;
+
+}
+
 function addToCart(product) {
 
     let cart =
@@ -294,13 +288,11 @@ function addToCart(product) {
         ) || [];
 
     const existing =
-        cart.find(
-            item =>
-                item.id ===
-                    product.id &&
-                item.color ===
-                    selectedColor
-        );
+    cart.find(
+        item =>
+            item.id ===
+            product.id
+    );
 
     if (existing) {
 
@@ -313,11 +305,17 @@ function addToCart(product) {
 
             ...product,
 
+            variant_color:
+                selectedColor,
+
+            variant_size:
+                selectedSize,
+
+
             quantity:
                 selectedQuantity,
 
-            color:
-                selectedColor,
+
 
             image_url:
                 selectedImage
@@ -377,15 +375,13 @@ function showToast(
     document.getElementById(
         "toastProduct"
     ).innerText =
-        productName +
-        " (" +
-        selectedColor +
-        ")";
+        productName ;
 
     document.getElementById(
         "toastCount"
     ).innerText =
-        "Cart Updated Successfully";
+        selectedQuantity +
+    " item(s) added to cart";;
 
     const toast =
         document.getElementById(

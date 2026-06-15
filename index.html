@@ -28,78 +28,84 @@ rel="stylesheet">
 
 <header class="header">
 
-<div class="logo-area">
+    <div class="logo-area">
 
-<img src="assets/logo.png"
-alt="Drip Designs"
-class="logo">
+        <img
+            src="assets/logo.png"
+            alt="Drip Designs"
+            class="logo">
 
-</div>
+    </div>
 
-<nav>
+    <nav>
 
-<a href="#">Home</a>
+        <a href="#">Home</a>
 
-<a href="#categories">Categories</a>
+        <a href="#categories">Categories</a>
 
-<a href="#bestsellers">Featured Products</a>
+        <a href="#bestsellers">Featured Products</a>
 
-<a href="#whyus">Why Us</a>
+        <a href="#whyus">Why Us</a>
 
-<a href="#footer">Contact</a>
+        <a href="#footer">Contact</a>
 
-</nav>
+    </nav>
 
-<div
-class="hamburger"
-onclick="toggleMenu()">
+    <div
+        class="hamburger"
+        onclick="toggleMenu()">
 
-☰
+        ☰
 
-</div>
+    </div>
 
-<div class="header-actions">
+    <div class="header-actions">
 
-<button class="cart-btn">
+        <button class="cart-btn">
+            🛒 Cart
+        </button>
 
-🛒 Cart
+        <button
+            class="login-btn"
+            onclick="openLoginModal()">
 
-</button>
+            Login
 
-<button
-class="login-btn"
-onclick="openLoginModal()">
+        </button>
 
-Login
-
-</button>
-
-</div>
-
-<div id="mobileMenu" class="mobile-menu">
-
-<div
-class="menu-close"
-onclick="toggleMenu()">
-
-✕
-
-</div>
-
-<a href="#">Home</a>
-
-<a href="#categories">Categories</a>
-
-<a href="#bestsellers">Featured Products</a>
-
-<a href="#whyus">Why Us</a>
-
-<a href="#footer">Contact</a>
-
-</div>
-
+    </div>
 
 </header>
+
+<div
+id="menuOverlay"
+class="menu-overlay"
+onclick="toggleMenu()">
+</div>
+
+<div
+id="mobileMenu"
+class="mobile-menu">
+
+    <div
+        class="menu-close"
+        onclick="toggleMenu()">
+
+        ✕
+
+    </div>
+
+    <a href="#">Home</a>
+
+    <a href="#categories">Categories</a>
+
+    <a href="#bestsellers">Featured Products</a>
+
+    <a href="#whyus">Why Us</a>
+
+    <a href="#footer">Contact</a>
+
+</div>
 
 
 <div
@@ -107,6 +113,8 @@ id="menuOverlay"
 class="menu-overlay"
 onclick="toggleMenu()">
 </div>
+
+<div id="mobileMenu" class="mobile-menu"></div>
 
 <section class="hero">
 

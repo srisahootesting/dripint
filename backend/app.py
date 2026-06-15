@@ -470,6 +470,41 @@ def get_product(product_id):
 
         conn.close()
 
+
+
+
+@app.route(
+    "/product/<int:product_id>/variants",
+    methods=["GET"]
+)
+def get_product_variants(product_id):
+
+    conn = get_db_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            sku,
+            size,
+            color,
+            variant_name,
+            image_url,
+            price
+        FROM product_variants
+        WHERE product_id=%s
+        AND status='ACTIVE'
+    """, (product_id,))
+
+    variants = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return jsonify(variants)
+
+
 # ====================================
 # QIKINK TEST
 # ====================================
